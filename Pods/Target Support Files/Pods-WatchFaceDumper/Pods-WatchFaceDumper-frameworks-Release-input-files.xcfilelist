@@ -1,0 +1,5 @@
+${PODS_ROOT}/Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper-frameworks.sh
+${BUILT_PRODUCTS_DIR}/FootlessParser/FootlessParser.framework
+${BUILT_PRODUCTS_DIR}/NorthLayout/NorthLayout.framework
+${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework
+${BUILT_PRODUCTS_DIR}/※ikemen/Ikemen.framework

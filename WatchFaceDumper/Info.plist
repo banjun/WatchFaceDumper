@@ -7,11 +7,15 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeName</key>
+			<string>WatchFace</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.example.plain-text</string>
+				<string>jp.banjun.com.apple.watchface</string>
 			</array>
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).Document</string>
@@ -39,22 +43,46 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Apple Watch Face</string>
+			<key>UTTypeIcons</key>
+			<dict/>
+			<key>UTTypeIdentifier</key>
+			<string>jp.banjun.com.apple.watchface</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>watchface</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.plain-text</string>
+				<string>com.apple.watchface</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Example Text</string>
+			<string>Apple Watch Face</string>
+			<key>UTTypeIcons</key>
+			<dict/>
 			<key>UTTypeIdentifier</key>
-			<string>com.example.plain-text</string>
+			<string>jp.banjun.com.apple.watchface</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>exampletext</string>
+					<string>watchface</string>
 				</array>
 			</dict>
 		</dict>

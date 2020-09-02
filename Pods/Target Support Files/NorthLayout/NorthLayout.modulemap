@@ -1,0 +1,6 @@
+framework module NorthLayout {
+  umbrella header "NorthLayout-umbrella.h"
+
+  export *
+  module * { export * }
+}

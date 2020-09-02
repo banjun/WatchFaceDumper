@@ -1,0 +1,6 @@
+framework module FootlessParser {
+  umbrella header "FootlessParser-umbrella.h"
+
+  export *
+  module * { export * }
+}

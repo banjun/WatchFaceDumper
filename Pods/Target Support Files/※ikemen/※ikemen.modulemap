@@ -1,0 +1,6 @@
+framework module Ikemen {
+  umbrella header "※ikemen-umbrella.h"
+
+  export *
+  module * { export * }
+}

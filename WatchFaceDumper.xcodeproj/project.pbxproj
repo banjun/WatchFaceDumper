@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC51E52AB348334BC5955DAA /* Pods_WatchFaceDumper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54880CF96D784246956151A8 /* Pods_WatchFaceDumper.framework */; };
+		EA23D87F24FFF39F009A80D4 /* Watchface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA23D87E24FFF39F009A80D4 /* Watchface.swift */; };
 		EA4D31BA24FFE37100104A33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4D31B924FFE37100104A33 /* AppDelegate.swift */; };
 		EA4D31BC24FFE37100104A33 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4D31BB24FFE37100104A33 /* ViewController.swift */; };
 		EA4D31BE24FFE37100104A33 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4D31BD24FFE37100104A33 /* Document.swift */; };
@@ -15,6 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2EC06F9B603664543852B042 /* Pods-WatchFaceDumper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WatchFaceDumper.debug.xcconfig"; path = "Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper.debug.xcconfig"; sourceTree = "<group>"; };
+		54880CF96D784246956151A8 /* Pods_WatchFaceDumper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WatchFaceDumper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA23D87E24FFF39F009A80D4 /* Watchface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watchface.swift; sourceTree = "<group>"; };
 		EA4D31B624FFE37100104A33 /* WatchFaceDumper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchFaceDumper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA4D31B924FFE37100104A33 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA4D31BB24FFE37100104A33 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -23,6 +28,7 @@
 		EA4D31C224FFE37200104A33 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EA4D31C424FFE37200104A33 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EA4D31C524FFE37200104A33 /* WatchFaceDumper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchFaceDumper.entitlements; sourceTree = "<group>"; };
+		FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WatchFaceDumper.release.xcconfig"; path = "Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,17 +36,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC51E52AB348334BC5955DAA /* Pods_WatchFaceDumper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8E45C27CF3A17723C9BB6E7E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2EC06F9B603664543852B042 /* Pods-WatchFaceDumper.debug.xcconfig */,
+				FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		970F6C4464A3AF606413EFCC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				54880CF96D784246956151A8 /* Pods_WatchFaceDumper.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EA4D31AD24FFE37100104A33 = {
 			isa = PBXGroup;
 			children = (
 				EA4D31B824FFE37100104A33 /* WatchFaceDumper */,
 				EA4D31B724FFE37100104A33 /* Products */,
+				8E45C27CF3A17723C9BB6E7E /* Pods */,
+				970F6C4464A3AF606413EFCC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,6 +84,7 @@
 				EA4D31B924FFE37100104A33 /* AppDelegate.swift */,
 				EA4D31BB24FFE37100104A33 /* ViewController.swift */,
 				EA4D31BD24FFE37100104A33 /* Document.swift */,
+				EA23D87E24FFF39F009A80D4 /* Watchface.swift */,
 				EA4D31BF24FFE37200104A33 /* Assets.xcassets */,
 				EA4D31C124FFE37200104A33 /* Main.storyboard */,
 				EA4D31C424FFE37200104A33 /* Info.plist */,
@@ -73,9 +100,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EA4D31C824FFE37200104A33 /* Build configuration list for PBXNativeTarget "WatchFaceDumper" */;
 			buildPhases = (
+				270CFC7E80C227C99839F39A /* [CP] Check Pods Manifest.lock */,
 				EA4D31B224FFE37100104A33 /* Sources */,
 				EA4D31B324FFE37100104A33 /* Frameworks */,
 				EA4D31B424FFE37100104A33 /* Resources */,
+				D382BC723F16F16518045704 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -130,11 +159,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		270CFC7E80C227C99839F39A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WatchFaceDumper-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D382BC723F16F16518045704 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		EA4D31B224FFE37100104A33 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA23D87F24FFF39F009A80D4 /* Watchface.swift in Sources */,
 				EA4D31BC24FFE37100104A33 /* ViewController.swift in Sources */,
 				EA4D31BA24FFE37100104A33 /* AppDelegate.swift in Sources */,
 				EA4D31BE24FFE37100104A33 /* Document.swift in Sources */,
@@ -272,6 +344,7 @@
 		};
 		EA4D31C924FFE37200104A33 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EC06F9B603664543852B042 /* Pods-WatchFaceDumper.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -291,6 +364,7 @@
 		};
 		EA4D31CA24FFE37200104A33 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
