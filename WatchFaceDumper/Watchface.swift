@@ -172,7 +172,7 @@ struct Watchface {
     struct Resources {
         var images: Metadata
 //        var livePhotos: [(mov: QuickTimeMov, jpeg: JPEG, assetIdentifier: String)]
-        var files: [String: Data]
+        var files: [String: Data] // memory cache
 
         struct Metadata: Codable {
             var imageList: [Item]

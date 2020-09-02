@@ -12,6 +12,8 @@ final class ViewController: NSViewController {
     private let imageListStackView = NSStackView() ※ {
         $0.orientation = .horizontal
     }
+    private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
+    private let complicationsBottomLabel = NSTextField(labelWithString: "complications.bottom")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +27,8 @@ final class ViewController: NSViewController {
             "deviceBorderSnapshotLabel": deviceBorderSnapshotLabel,
             "imageList": imageListStackView,
             "imageListLabel": NSTextField(labelWithString: "Resources/Images"),
+            "complicationsTop": complicationsTopLabel,
+            "complicationsBottom": complicationsBottomLabel,
             "spacer0": MinView(),
             "spacer1": MinView(),
             "spacer2": MinView(),
@@ -33,10 +37,12 @@ final class ViewController: NSViewController {
         autolayout("H:|-(>=20)-[snapshotLabel]-(>=20)-[noBordersSnapshotLabel]-(>=20)-[deviceBorderSnapshotLabel]-(>=20)-|")
         autolayout("H:|-[imageListLabel]-|")
         autolayout("H:|-[imageList]-|")
+        autolayout("H:|-[complicationsTop]-|")
+        autolayout("H:|-[complicationsBottom]-|")
         autolayout("V:|-[snapshot]-[snapshotLabel]-(>=20)-[imageListLabel]")
         autolayout("V:|-[noBordersSnapshot]-[noBordersSnapshotLabel]-(>=20)-[imageListLabel]")
         autolayout("V:|-[deviceBorderSnapshot]-[deviceBorderSnapshotLabel]-(>=20)-[imageListLabel]")
-        autolayout("V:[imageListLabel]-[imageList]-|")
+        autolayout("V:[imageListLabel]-[imageList]-[complicationsTop]-[complicationsBottom]-|")
 
         snapshot.centerYAnchor.constraint(equalTo: noBordersSnapshot.centerYAnchor).isActive = true
         snapshot.centerYAnchor.constraint(equalTo: deviceBorderSnapshot.centerYAnchor).isActive = true
@@ -63,7 +69,36 @@ final class ViewController: NSViewController {
             images.forEach {
                 imageListStackView.addArrangedSubview(NSImageView(image: $0))
             }
+
+            complicationsTopLabel.stringValue = "complications.top: " + (watchface?.metadata.complications_names.top ?? "") + " " +  (watchface?.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "")
+            complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface?.metadata.complications_names.bottom ?? "") + " " + (watchface?.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "")
         }
     }
 }
 
+extension Watchface.Metadata.ComplicationSampleTemplate.ComplicationTemplate {
+    var sampleText: String? {
+        switch self {
+        case .utilitarianSmallFlat(let t): return t.textProvider.sampleText
+        case .utilitarianLargeFlat(let t): return t.textProvider.sampleText
+        }
+    }
+}
+extension Watchface.Metadata.ComplicationSampleTemplate.CLKTextProvider {
+    var sampleText: String? {
+        switch self {
+        case .date(let p):
+            let df = DateFormatter()
+            df.dateFormat = "yyyy-MM-dd"
+            return df.string(from: p.date)
+        case .time(let p):
+            let df = DateFormatter()
+            df.dateFormat = "HH:mm"
+            return df.string(from: p.date)
+        case .compound(let p):
+            return zip(p.format_segments, p.textProviders.map {$0.sampleText ?? ""}).map {$0 + $1}.joined() + (p.format_segments.last ?? "")
+        case .simple(let p):
+            return p.text
+        }
+    }
+}
