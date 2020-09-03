@@ -171,8 +171,7 @@ struct Watchface {
     var resources: Resources
     struct Resources {
         var images: Metadata
-//        var livePhotos: [(mov: QuickTimeMov, jpeg: JPEG, assetIdentifier: String)]
-        var files: [String: Data] // memory cache
+        var files: [String: Data] // filename -> content
 
         struct Metadata: Codable {
             var imageList: [Item]
@@ -220,26 +219,63 @@ struct Watchface {
                 var originalCropY: Double
             }
         }
-
-//        func fileWrapper(tmpDir: URL) throws -> FileWrapper {
-//            FileWrapper(directoryWithFileWrappers: try livePhotos.reduce(into: ["Images.plist": FileWrapper(regularFileWithContents: try PropertyListEncoder().encode(images))]) {
-//                let tmpJpegURL = tmpDir.appendingPathComponent($1.assetIdentifier).appendingPathExtension("jpg")
-//                let tmpMovURL = tmpDir.appendingPathComponent($1.assetIdentifier).appendingPathExtension("mov")
-//                $1.jpeg.write(tmpJpegURL.path, assetIdentifier: $1.assetIdentifier)
-//                $1.mov.write(tmpMovURL.path, assetIdentifier: $1.assetIdentifier)
-//                $0["\($1.assetIdentifier).jpg"] = FileWrapper(regularFileWithContents: try Data(contentsOf: tmpJpegURL))
-//                $0["\($1.assetIdentifier).mov"] = FileWrapper(regularFileWithContents: try Data(contentsOf: tmpMovURL))
-//            })
-//        }
     }
+}
 
-//    func fileWrapper(tmpDir: URL) throws -> FileWrapper {
-//        FileWrapper(directoryWithFileWrappers: [
-//            "face.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(face)),
-//            "metadata.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(metadata)),
-//            "snapshot.png": FileWrapper(regularFileWithContents: snapshot),
-//            "no_borders_snapshot.png": FileWrapper(regularFileWithContents: no_borders_snapshot),
-//            "device_border_snapshot.png": FileWrapper(regularFileWithContents: device_border_snapshot),
-//            "Resources": try resources.fileWrapper(tmpDir: tmpDir)])
-//    }
+extension Watchface {
+    init(fileWrapper: FileWrapper) throws {
+        guard let metadata_json = fileWrapper.fileWrappers?["metadata.json"]?.regularFileContents else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "metadata.json not found"))
+        }
+        let metadata = try JSONDecoder().decode(Watchface.Metadata.self, from: metadata_json)
+
+        guard let face_json = fileWrapper.fileWrappers?["face.json"]?.regularFileContents else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "face.json not found"))
+        }
+        let face = try JSONDecoder().decode(Watchface.Face.self, from: face_json)
+
+        guard let snapshot = fileWrapper.fileWrappers?["snapshot.png"]?.regularFileContents else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "snapshot.png not found"))
+        }
+
+        guard let no_borders_snapshot = fileWrapper.fileWrappers?["no_borders_snapshot.png"]?.regularFileContents else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "no_borders_snapshot.png not found"))
+        }
+
+        let device_border_snapshot = fileWrapper.fileWrappers?["device_border_snapshot.png"]?.regularFileContents
+
+        guard let resources = fileWrapper.fileWrappers?["Resources"]?.fileWrappers else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Resources/ not found"))
+        }
+
+        guard let resources_metadata_plist = resources["Images.plist"]?.regularFileContents else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Images.plist not found"))
+        }
+        let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
+
+        self.init(
+            metadata: metadata,
+            face: face,
+            snapshot: snapshot,
+            no_borders_snapshot: no_borders_snapshot,
+            device_border_snapshot: device_border_snapshot,
+            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.map {$0.imageURL}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
+        )
+    }
+}
+
+extension FileWrapper {
+    convenience init(watchface: Watchface) throws {
+        self.init(directoryWithFileWrappers: [
+            "face.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(watchface.face)),
+            "metadata.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(watchface.metadata)),
+            "snapshot.png": FileWrapper(regularFileWithContents: watchface.snapshot),
+            "no_borders_snapshot.png": FileWrapper(regularFileWithContents: watchface.no_borders_snapshot),
+            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
+            "Resources": FileWrapper(
+                directoryWithFileWrappers:
+                    watchface.resources.files.mapValues {FileWrapper(regularFileWithContents: $0)}.merging(
+                        ["Images.plist": FileWrapper(regularFileWithContents: try PropertyListEncoder().encode(watchface.resources.images))], uniquingKeysWith: {a,b in a})),
+        ].compactMapValues {$0})
+    }
 }

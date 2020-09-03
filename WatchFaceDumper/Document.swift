@@ -9,7 +9,6 @@ class Document: NSDocument {
     }
 
     override func makeWindowControllers() {
-        // Returns the Storyboard that contains your Document window.
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController
         let vc = windowController.contentViewController as! ViewController
@@ -25,54 +24,24 @@ class Document: NSDocument {
     }
 
     override func read(from fileWrapper: FileWrapper, ofType typeName: String) throws {
-        NSLog("%@", "\(fileWrapper.debugDescription)")
-        NSLog("%@", "\(String(describing: fileWrapper.fileWrappers))")
-
-        guard let metadata_json = fileWrapper.fileWrappers?["metadata.json"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "metadata.json not found"))
-        }
-        let metadata = try JSONDecoder().decode(Watchface.Metadata.self, from: metadata_json)
-
-        guard let face_json = fileWrapper.fileWrappers?["face.json"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "face.json not found"))
-        }
-        let face = try JSONDecoder().decode(Watchface.Face.self, from: face_json)
-
-        guard let snapshot = fileWrapper.fileWrappers?["snapshot.png"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "snapshot.png not found"))
-        }
-
-        guard let no_borders_snapshot = fileWrapper.fileWrappers?["no_borders_snapshot.png"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "no_borders_snapshot.png not found"))
-        }
-
-        let device_border_snapshot = fileWrapper.fileWrappers?["device_border_snapshot.png"]?.regularFileContents
-
-        guard let resources = fileWrapper.fileWrappers?["Resources"]?.fileWrappers else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Resources/ not found"))
-        }
-
-        guard let resources_metadata_plist = resources["Images.plist"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Images.plist not found"))
-        }
-        let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
-
-        self.watchface = Watchface(
-            metadata: metadata,
-            face: face,
-            snapshot: snapshot,
-            no_borders_snapshot: no_borders_snapshot,
-            device_border_snapshot: device_border_snapshot,
-            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.map {$0.imageURL}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
-        )
+        self.watchface = try Watchface(fileWrapper: fileWrapper)
     }
 
-    override func fileWrapper(ofType typeName: String) throws -> FileWrapper {
-        throw NSError()
-//        FileWrapper(
-//            directoryWithFileWrappers: [
-//                "metadata.json": FileWrapper(regularFileWithContents: Data())
-//            ])
+    override func data(ofType typeName: String) throws -> Data {
+        guard let watchface = watchface else {
+            throw EncodingError.invalidValue(self.watchface as Any, EncodingError.Context(codingPath: [], debugDescription: "watchface is nil"))
+        }
+        let fw = try FileWrapper(watchface: watchface)
+
+        let tmpFolderURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
+        defer {try? FileManager.default.removeItem(at: tmpFolderURL)}
+        try fw.write(to: tmpFolderURL, options: [], originalContentsURL: nil)
+
+        let tmpZipURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
+        defer {try? FileManager.default.removeItem(at: tmpZipURL)}
+        try FileManager.default.zipItem(at: tmpFolderURL, to: tmpZipURL, shouldKeepParent: false)
+
+        return try Data(contentsOf: tmpZipURL)
     }
 }
 
