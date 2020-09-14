@@ -4,15 +4,13 @@ import ZIPFoundation
 class Document: NSDocument {
     var watchface: Watchface?
 
-    override class var autosavesInPlace: Bool {
-        return true
-    }
+    override class var autosavesInPlace: Bool { true } // enables (- Edited) mark, duplicates and reverts
 
     override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController
         let vc = windowController.contentViewController as! ViewController
-        vc.watchface = watchface
+        vc.document = self
         self.addWindowController(windowController)
     }
 
@@ -25,6 +23,7 @@ class Document: NSDocument {
 
     override func read(from fileWrapper: FileWrapper, ofType typeName: String) throws {
         self.watchface = try Watchface(fileWrapper: fileWrapper)
+        updateChangeCount(.changeDone) // temporarily workaround for enabling (- Edited) mark
     }
 
     override func data(ofType typeName: String) throws -> Data {

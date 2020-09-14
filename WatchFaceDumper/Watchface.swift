@@ -259,7 +259,7 @@ extension Watchface {
             snapshot: snapshot,
             no_borders_snapshot: no_borders_snapshot,
             device_border_snapshot: device_border_snapshot,
-            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.map {$0.imageURL}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
+            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
         )
     }
 }
