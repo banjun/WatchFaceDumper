@@ -92,14 +92,28 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     func numberOfRows(in tableView: NSTableView) -> Int {imageItems.count}
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {nil}
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
-        ImteItemRowView(item: imageItems[row])
+        ImageItemRowView(item: imageItems[row]) ※ {
+            $0.imageDidChange = { [weak self] image in
+                guard let self = self else { return }
+                self.document?.watchface = self.document?.watchface ※ { watchface in
+                    guard let imageURL = watchface?.resources.images.imageList[row].imageURL else { return }
+                    let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    watchface?.resources.files[imageURL] = jpeg
+                }
+                self.reloadDocument()
+            }
+        }
     }
 
-    final class ImteItemRowView: NSTableRowView, AVAssetResourceLoaderDelegate {
-        private let imageView = NSImageView()
+    final class ImageItemRowView: NSTableRowView, AVAssetResourceLoaderDelegate {
+        private let imageView = NSImageView() ※ {
+            $0.imageFrameStyle = .photo
+            $0.isEditable = true
+        }
         private let movieView = AVPlayerView()
         private let movieData: Data?
         private let asset: AVURLAsset?
+        var imageDidChange: ((NSImage?) -> Void)?
 
         init(item: ImageItem) {
             self.movieData = item.movie
@@ -110,6 +124,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             let autolayout = northLayoutFormat([:], [
                 "size": NSTextField(labelWithString: item.image.map {"\(Int($0.size.width))×\(Int($0.size.height))"} ?? "no image"),
                 "image": imageView ※ {
+                    $0.target = self
+                    $0.action = #selector(imageViewDidChangeValue(_:))
                     $0.image = item.image
                     if let image = item.image {
                         $0.widthAnchor.constraint(equalTo: $0.heightAnchor, multiplier: image.size.width / image.size.height).isActive = true
@@ -141,6 +157,10 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             }
             loadingRequest.finishLoading()
             return true
+        }
+
+        @IBAction func imageViewDidChangeValue(_ sender: Any?) {
+            imageDidChange?(imageView.image)
         }
     }
 
