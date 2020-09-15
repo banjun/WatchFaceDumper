@@ -166,7 +166,7 @@ struct Watchface {
 
     var snapshot: Data
     var no_borders_snapshot: Data
-    var device_border_snapshot: Data?
+//    var device_border_snapshot: Data?
 
     var resources: Resources
     struct Resources {
@@ -242,7 +242,7 @@ extension Watchface {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "no_borders_snapshot.png not found"))
         }
 
-        let device_border_snapshot = fileWrapper.fileWrappers?["device_border_snapshot.png"]?.regularFileContents
+//        let device_border_snapshot = fileWrapper.fileWrappers?["device_border_snapshot.png"]?.regularFileContents
 
         guard let resources = fileWrapper.fileWrappers?["Resources"]?.fileWrappers else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Resources/ not found"))
@@ -258,7 +258,7 @@ extension Watchface {
             face: face,
             snapshot: snapshot,
             no_borders_snapshot: no_borders_snapshot,
-            device_border_snapshot: device_border_snapshot,
+//            device_border_snapshot: device_border_snapshot,
             resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
         )
     }
@@ -271,7 +271,7 @@ extension FileWrapper {
             "metadata.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(watchface.metadata)),
             "snapshot.png": FileWrapper(regularFileWithContents: watchface.snapshot),
             "no_borders_snapshot.png": FileWrapper(regularFileWithContents: watchface.no_borders_snapshot),
-            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
+//            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
             "Resources": FileWrapper(
                 directoryWithFileWrappers:
                     watchface.resources.files.mapValues {FileWrapper(regularFileWithContents: $0)}.merging(

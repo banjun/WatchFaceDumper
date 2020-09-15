@@ -8,8 +8,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private let snapshotLabel = NSTextField(labelWithString: "snapshot")
     private let noBordersSnapshot = NSImageView()
     private let noBordersSnapshotLabel = NSTextField(labelWithString: "no_borders_snapshot")
-    private let deviceBorderSnapshot = NSImageView()
-    private let deviceBorderSnapshotLabel = NSTextField(labelWithString: "device_border_snapshot")
     private lazy var imageListTableView: NSTableView = .init(frame: .zero) ※ {
         $0.delegate = self
         $0.dataSource = self
@@ -24,13 +22,17 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let autolayout = view.northLayoutFormat([:], [
-            "snapshot": snapshot,
+        let autolayout = view.northLayoutFormat(["pp": 16], [
+            "snapshot": snapshot ※ {
+                $0.setContentHuggingPriority(.required, for: .horizontal)
+                $0.setContentHuggingPriority(.required, for: .vertical)
+            },
             "snapshotLabel": snapshotLabel,
-            "noBordersSnapshot": noBordersSnapshot,
+            "noBordersSnapshot": noBordersSnapshot ※ {
+                $0.setContentHuggingPriority(.required, for: .horizontal)
+                $0.setContentHuggingPriority(.required, for: .vertical)
+            },
             "noBordersSnapshotLabel": noBordersSnapshotLabel,
-            "deviceBorderSnapshot": deviceBorderSnapshot,
-            "deviceBorderSnapshotLabel": deviceBorderSnapshotLabel,
             "imageList": NSScrollView() ※ { sv in
                 sv.hasVerticalScroller = true
                 sv.documentView = imageListTableView
@@ -39,28 +41,24 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             "removeImage": removeImageButton,
             "complicationsTop": complicationsTopLabel,
             "complicationsBottom": complicationsBottomLabel,
-            "spacer0": MinView(),
             "spacer1": MinView(),
             "spacer2": MinView(),
         ])
-        autolayout("H:|-[spacer0][snapshot][spacer1(spacer0)][noBordersSnapshot][spacer2(spacer0)][deviceBorderSnapshot]-[imageList(>=400)]|")
-        autolayout("H:|-(>=20)-[snapshotLabel]-(>=20)-[noBordersSnapshotLabel]-(>=20)-[deviceBorderSnapshotLabel]-[imageList]|")
-        autolayout("H:|-[complicationsTop]-|")
-        autolayout("H:|-[complicationsBottom]-|")
-        autolayout("H:[deviceBorderSnapshot]-[addImage]-[removeImage(addImage)]-|")
-        autolayout("V:|-[snapshot]-[snapshotLabel]-(>=20)-[complicationsTop]")
-        autolayout("V:|-[noBordersSnapshot]-[noBordersSnapshotLabel]-(>=20)-[complicationsTop]")
-        autolayout("V:|-[deviceBorderSnapshot]-[deviceBorderSnapshotLabel]-(>=20)-[complicationsTop]")
-        autolayout("V:|[imageList]-[addImage]-20-|")
-        autolayout("V:|[imageList]-[removeImage]-20-|")
-        autolayout("V:[complicationsTop]-[complicationsBottom]-|")
+        autolayout("H:|-pp-[snapshot]-pp-[noBordersSnapshot]-pp-[imageList(>=240)]|")
+        autolayout("H:[noBordersSnapshotLabel]-(>=pp)-[imageList]")
+        autolayout("H:|-pp-[complicationsTop]-pp-[imageList]")
+        autolayout("H:|-pp-[complicationsBottom]-pp-[imageList]")
+        autolayout("H:[noBordersSnapshot]-pp-[addImage]-[removeImage(addImage)]-|")
+        autolayout("V:|-(>=pp)-[snapshot][spacer1(>=pp)][snapshotLabel]-(>=pp)-[complicationsTop]")
+        autolayout("V:|-(>=pp)-[noBordersSnapshot][spacer2(>=pp)][noBordersSnapshotLabel]-(>=pp)-[complicationsTop]")
+        autolayout("V:[complicationsTop]-[complicationsBottom]-pp-|")
+        autolayout("V:|[imageList]-[addImage]-pp-|")
+        autolayout("V:|[imageList]-[removeImage]-pp-|")
 
         snapshot.centerYAnchor.constraint(equalTo: noBordersSnapshot.centerYAnchor).isActive = true
-        snapshot.centerYAnchor.constraint(equalTo: deviceBorderSnapshot.centerYAnchor).isActive = true
 
         snapshot.centerXAnchor.constraint(equalTo: snapshotLabel.centerXAnchor).isActive = true
         noBordersSnapshot.centerXAnchor.constraint(equalTo: noBordersSnapshotLabel.centerXAnchor).isActive = true
-        deviceBorderSnapshot.centerXAnchor.constraint(equalTo: deviceBorderSnapshotLabel.centerXAnchor).isActive = true
     }
 
     var document: Document? {
@@ -74,7 +72,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         NSLog("%@", "\(watchface)")
         snapshot.image = watchface.flatMap {NSImage(data: $0.snapshot)}
         noBordersSnapshot.image = watchface.flatMap {NSImage(data: $0.no_borders_snapshot)}
-        deviceBorderSnapshot.image = watchface.flatMap {$0.device_border_snapshot}.flatMap {NSImage(data: $0)}
 
         let resources = watchface?.resources
         imageItems = (resources.flatMap {r in r.images.imageList.map {(r.files[$0.imageURL], r.files[$0.irisVideoURL])}} ?? [])
