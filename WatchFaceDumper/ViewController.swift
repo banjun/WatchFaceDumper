@@ -43,7 +43,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             "spacer1": MinView(),
             "spacer2": MinView(),
         ])
-        autolayout("H:|-[spacer0][snapshot][spacer1(spacer0)][noBordersSnapshot][spacer2(spacer0)][deviceBorderSnapshot]-[imageList(>=120)]|")
+        autolayout("H:|-[spacer0][snapshot][spacer1(spacer0)][noBordersSnapshot][spacer2(spacer0)][deviceBorderSnapshot]-[imageList(>=400)]|")
         autolayout("H:|-(>=20)-[snapshotLabel]-(>=20)-[noBordersSnapshotLabel]-(>=20)-[deviceBorderSnapshotLabel]-[imageList]|")
         autolayout("H:|-[complicationsTop]-|")
         autolayout("H:|-[complicationsBottom]-|")
@@ -51,8 +51,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         autolayout("V:|-[snapshot]-[snapshotLabel]-(>=20)-[complicationsTop]")
         autolayout("V:|-[noBordersSnapshot]-[noBordersSnapshotLabel]-(>=20)-[complicationsTop]")
         autolayout("V:|-[deviceBorderSnapshot]-[deviceBorderSnapshotLabel]-(>=20)-[complicationsTop]")
-        autolayout("V:|[imageList]-[addImage]-|")
-        autolayout("V:|[imageList]-[removeImage]-|")
+        autolayout("V:|[imageList]-[addImage]-20-|")
+        autolayout("V:|[imageList]-[removeImage]-20-|")
         autolayout("V:[complicationsTop]-[complicationsBottom]-|")
 
         snapshot.centerYAnchor.constraint(equalTo: noBordersSnapshot.centerYAnchor).isActive = true

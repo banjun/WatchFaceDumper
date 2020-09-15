@@ -209,10 +209,10 @@ struct Watchface {
                 var localIdentifier: String
                 var modificationDate: Date = .init()
 
-                var cropH: Int = 480
-                var cropW: Int = 384
-                var cropX: Int = 0
-                var cropY: Int = 0
+                var cropH: Double = 480
+                var cropW: Double = 384
+                var cropX: Double = 0
+                var cropY: Double = 0
                 var originalCropH: Double
                 var originalCropW: Double
                 var originalCropX: Double
