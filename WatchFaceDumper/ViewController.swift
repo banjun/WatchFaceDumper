@@ -99,26 +99,34 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                     guard let imageURL = watchface?.resources.images.imageList[row].imageURL else { return }
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
                     watchface?.resources.files[imageURL] = jpeg
+                    // TODO: resize
+                }
+                self.reloadDocument()
+            }
+            $0.movieDidChange = { [weak self] movie in
+                guard let self = self else { return }
+                self.document?.watchface = self.document?.watchface ※ { watchface in
+                    guard let irisVideoURL = watchface?.resources.images.imageList[row].irisVideoURL else { return }
+                    watchface?.resources.files[irisVideoURL] = movie
+                    watchface?.resources.images.imageList[row].isIris = movie != nil
+                    // TODO: re-compress: should be less than 3 secs?
+                    // TODO: update duration metadata
                 }
                 self.reloadDocument()
             }
         }
     }
 
-    final class ImageItemRowView: NSTableRowView, AVAssetResourceLoaderDelegate {
+    final class ImageItemRowView: NSTableRowView {
         private let imageView = NSImageView() ※ {
             $0.imageFrameStyle = .photo
             $0.isEditable = true
         }
-        private let movieView = AVPlayerView()
-        private let movieData: Data?
-        private let asset: AVURLAsset?
+        private let movieView = EditableAVPlayerView()
         var imageDidChange: ((NSImage?) -> Void)?
+        var movieDidChange: ((Data?) -> Void)?
 
         init(item: ImageItem) {
-            self.movieData = item.movie
-            self.asset = item.movie.map {_ in AVURLAsset(url: URL(string: "data://")!)}
-
             super.init(frame: .zero)
 
             let autolayout = northLayoutFormat([:], [
@@ -131,11 +139,13 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                         $0.widthAnchor.constraint(equalTo: $0.heightAnchor, multiplier: image.size.width / image.size.height).isActive = true
                     }
                 },
-                "movie": self.asset.map { asset in movieView ※ {
+                "movie": item.movie.map { data in
+                    movieView ※ {
                         $0.controlsStyle = .minimal
-                        $0.player = AVPlayer(playerItem: AVPlayerItem(asset: asset ※ {
-                            $0.resourceLoader.setDelegate(self, queue: .main)
-                        }))
+                        $0.data = data
+                        $0.dataDidChange = { [weak self] data in
+                            self?.movieDidChange?(data)
+                        }
                     }
                 } ?? NSView(),
             ])
@@ -147,8 +157,44 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
         required init?(coder: NSCoder) {fatalError("init(coder:) has not been implemented")}
 
+        @IBAction func imageViewDidChangeValue(_ sender: Any?) {
+            imageDidChange?(imageView.image)
+        }
+    }
+
+    final class EditableAVPlayerView: AVPlayerView, AVAssetResourceLoaderDelegate {
+        private var asset: AVURLAsset? {
+            didSet {
+                asset?.resourceLoader.setDelegate(self, queue: .main)
+                player = asset.map {AVPlayer(playerItem: AVPlayerItem(asset: $0))}
+            }
+        }
+        var data: Data? {
+            didSet {
+                asset = AVURLAsset(url: URL(string: "data://")!)
+                dataDidChange?(data)
+            }
+        }
+        var dataDidChange: ((Data?) -> Void)?
+
+        override init(frame frameRect: NSRect) {
+            super.init(frame: frameRect)
+            registerForDraggedTypes([.fileURL])
+        }
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+            .copy
+        }
+        override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+            guard let data = (NSURL(from: sender.draggingPasteboard).flatMap {try? Data(contentsOf: $0 as URL)}) else { return false }
+            self.data = data
+            return true
+        }
+
         func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-            guard let data = movieData else { return true }
+            guard let data = self.data else { return true }
             loadingRequest.contentInformationRequest?.contentType = "com.apple.quicktime-movie"
             loadingRequest.contentInformationRequest?.contentLength = Int64(data.count)
             loadingRequest.contentInformationRequest?.isByteRangeAccessSupported = true
@@ -157,10 +203,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             }
             loadingRequest.finishLoading()
             return true
-        }
-
-        @IBAction func imageViewDidChangeValue(_ sender: Any?) {
-            imageDidChange?(imageView.image)
         }
     }
 
