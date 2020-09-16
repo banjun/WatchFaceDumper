@@ -4,6 +4,12 @@ import Ikemen
 import AVKit
 
 final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
+    var document: Document {
+        didSet {
+            reloadDocument()
+        }
+    }
+
     private let snapshotsStackView = NSStackView() ※ {
         $0.orientation = .horizontal
         $0.alignment = .centerY
@@ -26,6 +32,17 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private lazy var removeImageButton: NSButton = .init(title: "Remove Image", target: self, action: #selector(removeImage(_:)))
     private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
     private let complicationsBottomLabel = NSTextField(labelWithString: "complications.bottom")
+
+    init(document: Document) {
+        self.document = document
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+
+    override func loadView() {
+        view = NSView()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,26 +91,23 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         autolayout("V:[complicationsTop]-[complicationsBottom]-pp-|")
         autolayout("V:|[imageList]-[addImage]-pp-|")
         autolayout("V:|[imageList]-[removeImage]-pp-|")
-    }
 
-    var document: Document? {
-        didSet {
-            reloadDocument()
-        }
+        reloadDocument()
     }
 
     func reloadDocument() {
-        let watchface = document?.watchface
+        let watchface = document.watchface
         // NSLog("%@", "\(watchface)")
-        snapshot.image = watchface.flatMap {NSImage(data: $0.snapshot)}
-        noBordersSnapshot.image = watchface.flatMap {NSImage(data: $0.no_borders_snapshot)}
+        snapshot.image = NSImage(data: watchface.snapshot)
+        noBordersSnapshot.image = NSImage(data: watchface.no_borders_snapshot)
 
-        let resources = watchface?.resources
-        imageItems = (resources.flatMap {r in r.images.imageList.map {(r.files[$0.imageURL], r.files[$0.irisVideoURL])}} ?? [])
+        let resources = watchface.resources
+        imageItems = resources.images.imageList
+            .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
             .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
 
-        complicationsTopLabel.stringValue = "complications.top: " + (watchface?.metadata.complications_names.top ?? "") + " " +  (watchface?.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "" as String)
-        complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface?.metadata.complications_names.bottom ?? "") + " " + (watchface?.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "" as String)
+        complicationsTopLabel.stringValue = "complications.top: " + (watchface.metadata.complications_names.top) + " " +  (watchface.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "")
+        complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface.metadata.complications_names.bottom) + " " + (watchface.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "")
     }
 
     typealias ImageItem = ImageItemRowView.ImageItem
@@ -106,8 +120,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
         ImageItemRowView(item: imageItems[row]) ※ {
             $0.imageDidChange = { [weak self] image in
-                guard let self = self, let watchface = self.document?.watchface else { return }
-                self.document?.watchface = watchface ※ { watchface in
+                guard let self = self else { return }
+                self.document.watchface = self.document.watchface ※ { watchface in
                     let imageURL = watchface.resources.images.imageList[row].imageURL
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
                     watchface.resources.files[imageURL] = jpeg
@@ -116,8 +130,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 self.reloadDocument()
             }
             $0.movieDidChange = { [weak self] movie in
-                guard let self = self, let watchface = self.document?.watchface else { return }
-                self.document?.watchface = watchface ※ { watchface in
+                guard let self = self else { return }
+                self.document.watchface = self.document.watchface ※ { watchface in
                     let irisVideoURL = watchface.resources.images.imageList[row].irisVideoURL
                     watchface.resources.files[irisVideoURL] = movie
                     watchface.resources.images.imageList[row].isIris = movie != nil
@@ -134,8 +148,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     }
 
     @IBAction func removeImage(_ sender: Any?) {
-        guard case 0..<imageItems.count = imageListTableView.selectedRow, let watchface = document?.watchface else { return }
-        document?.watchface = watchface ※ { watchface in
+        guard case 0..<imageItems.count = imageListTableView.selectedRow else { return }
+        document.watchface = document.watchface ※ { watchface in
             let removed = watchface.resources.images.imageList.remove(at: imageListTableView.selectedRow)
             [removed.imageURL, removed.irisVideoURL].forEach {
                 watchface.resources.files.removeValue(forKey: $0)

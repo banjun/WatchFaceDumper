@@ -22,11 +22,7 @@ class Document: NSDocument {
     }
 
     override func makeWindowControllers() {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
-        let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController
-        let vc = windowController.contentViewController as! ViewController
-        vc.document = self
-        self.addWindowController(windowController)
+        addWindowController(WindowController(document: self))
     }
 
     override func read(from url: URL, ofType typeName: String) throws {
@@ -58,3 +54,12 @@ class Document: NSDocument {
     }
 }
 
+extension Document: NSPasteboardWriting {
+    func writableTypes(for pasteboard: NSPasteboard) -> [NSPasteboard.PasteboardType] {
+        return [.init(rawValue: "com.apple.watchface")]
+    }
+
+    func pasteboardPropertyList(forType type: NSPasteboard.PasteboardType) -> Any? {
+        fileType.flatMap {try? data(ofType: $0) as NSData}
+    }
+}
