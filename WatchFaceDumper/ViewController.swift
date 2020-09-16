@@ -4,10 +4,18 @@ import Ikemen
 import AVKit
 
 final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
+    private let snapshotsStackView = NSStackView() ※ {
+        $0.orientation = .horizontal
+        $0.alignment = .centerY
+    }
     private let snapshot = NSImageView()
-    private let snapshotLabel = NSTextField(labelWithString: "snapshot")
+    private let snapshotLabel = NSTextField(labelWithString: "snapshot") ※ {
+        $0.alignment = .center
+    }
     private let noBordersSnapshot = NSImageView()
-    private let noBordersSnapshotLabel = NSTextField(labelWithString: "no_borders_snapshot")
+    private let noBordersSnapshotLabel = NSTextField(labelWithString: "no_borders_snapshot") ※ {
+        $0.alignment = .center
+    }
     private lazy var imageListTableView: NSTableView = .init(frame: .zero) ※ {
         $0.delegate = self
         $0.dataSource = self
@@ -23,16 +31,32 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         super.viewDidLoad()
 
         let autolayout = view.northLayoutFormat(["pp": 16], [
-            "snapshot": snapshot ※ {
-                $0.setContentHuggingPriority(.required, for: .horizontal)
-                $0.setContentHuggingPriority(.required, for: .vertical)
+            "snapshots": snapshotsStackView ※ {
+                $0.addArrangedSubview(NSView() ※ {
+                    let autolayout = $0.northLayoutFormat([:], [
+                        "snapshot": snapshot ※ {
+                            $0.setContentHuggingPriority(.required, for: .horizontal)
+                            $0.setContentHuggingPriority(.required, for: .vertical)
+                        },
+                        "label": snapshotLabel
+                    ])
+                    autolayout("H:|[snapshot]|")
+                    autolayout("H:|[label]|")
+                    autolayout("V:|[snapshot]-[label]|")
+                })
+                $0.addArrangedSubview(NSView() ※ {
+                    let autolayout = $0.northLayoutFormat([:], [
+                        "snapshot": noBordersSnapshot ※ {
+                            $0.setContentHuggingPriority(.required, for: .horizontal)
+                            $0.setContentHuggingPriority(.required, for: .vertical)
+                        },
+                        "label": noBordersSnapshotLabel
+                    ])
+                    autolayout("H:|[snapshot]|")
+                    autolayout("H:|[label]|")
+                    autolayout("V:|[snapshot]-[label]|")
+                })
             },
-            "snapshotLabel": snapshotLabel,
-            "noBordersSnapshot": noBordersSnapshot ※ {
-                $0.setContentHuggingPriority(.required, for: .horizontal)
-                $0.setContentHuggingPriority(.required, for: .vertical)
-            },
-            "noBordersSnapshotLabel": noBordersSnapshotLabel,
             "imageList": NSScrollView() ※ { sv in
                 sv.hasVerticalScroller = true
                 sv.documentView = imageListTableView
@@ -41,24 +65,15 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             "removeImage": removeImageButton,
             "complicationsTop": complicationsTopLabel,
             "complicationsBottom": complicationsBottomLabel,
-            "spacer1": MinView(),
-            "spacer2": MinView(),
         ])
-        autolayout("H:|-pp-[snapshot]-pp-[noBordersSnapshot]-pp-[imageList(>=240)]|")
-        autolayout("H:[noBordersSnapshotLabel]-(>=pp)-[imageList]")
+        autolayout("H:|-pp-[snapshots]-pp-[imageList(>=240)]|")
         autolayout("H:|-pp-[complicationsTop]-pp-[imageList]")
         autolayout("H:|-pp-[complicationsBottom]-pp-[imageList]")
-        autolayout("H:[noBordersSnapshot]-pp-[addImage]-[removeImage(addImage)]-|")
-        autolayout("V:|-(>=pp)-[snapshot][spacer1(>=pp)][snapshotLabel]-(>=pp)-[complicationsTop]")
-        autolayout("V:|-(>=pp)-[noBordersSnapshot][spacer2(>=pp)][noBordersSnapshotLabel]-(>=pp)-[complicationsTop]")
+        autolayout("H:[snapshots]-pp-[addImage]-[removeImage(addImage)]-|")
+        autolayout("V:|-(>=pp)-[snapshots]-(>=pp)-[complicationsTop]")
         autolayout("V:[complicationsTop]-[complicationsBottom]-pp-|")
         autolayout("V:|[imageList]-[addImage]-pp-|")
         autolayout("V:|[imageList]-[removeImage]-pp-|")
-
-        snapshot.centerYAnchor.constraint(equalTo: noBordersSnapshot.centerYAnchor).isActive = true
-
-        snapshot.centerXAnchor.constraint(equalTo: snapshotLabel.centerXAnchor).isActive = true
-        noBordersSnapshot.centerXAnchor.constraint(equalTo: noBordersSnapshotLabel.centerXAnchor).isActive = true
     }
 
     var document: Document? {
