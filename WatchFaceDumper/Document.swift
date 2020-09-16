@@ -3,7 +3,12 @@ import ZIPFoundation
 import Ikemen
 
 class Document: NSDocument {
-    var watchface: Watchface?
+    var watchface: Watchface = .init(
+        metadata: .init(complication_sample_templates: .init(), complications_names: .init(), complications_item_ids: .init()),
+        face: .init(customization: .init()),
+        snapshot: Data(),
+        no_borders_snapshot: Data(),
+        resources: .init(images: .init(imageList: []), files: [:]))
     private var isLossyReading = false
     private var allowLossyAutosaving = false
 
@@ -39,9 +44,6 @@ class Document: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        guard let watchface = watchface else {
-            throw EncodingError.invalidValue(self.watchface as Any, EncodingError.Context(codingPath: [], debugDescription: "watchface is nil"))
-        }
         let fw = try FileWrapper(watchface: watchface)
 
         let tmpFolderURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)

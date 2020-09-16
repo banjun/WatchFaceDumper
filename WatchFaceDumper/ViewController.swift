@@ -94,21 +94,21 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
         ImageItemRowView(item: imageItems[row]) ※ {
             $0.imageDidChange = { [weak self] image in
-                guard let self = self else { return }
-                self.document?.watchface = self.document?.watchface ※ { watchface in
-                    guard let imageURL = watchface?.resources.images.imageList[row].imageURL else { return }
+                guard let self = self, let watchface = self.document?.watchface else { return }
+                self.document?.watchface = watchface ※ { watchface in
+                    let imageURL = watchface.resources.images.imageList[row].imageURL
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
-                    watchface?.resources.files[imageURL] = jpeg
+                    watchface.resources.files[imageURL] = jpeg
                     // TODO: resize
                 }
                 self.reloadDocument()
             }
             $0.movieDidChange = { [weak self] movie in
-                guard let self = self else { return }
-                self.document?.watchface = self.document?.watchface ※ { watchface in
-                    guard let irisVideoURL = watchface?.resources.images.imageList[row].irisVideoURL else { return }
-                    watchface?.resources.files[irisVideoURL] = movie
-                    watchface?.resources.images.imageList[row].isIris = movie != nil
+                guard let self = self, let watchface = self.document?.watchface else { return }
+                self.document?.watchface = watchface ※ { watchface in
+                    let irisVideoURL = watchface.resources.images.imageList[row].irisVideoURL
+                    watchface.resources.files[irisVideoURL] = movie
+                    watchface.resources.images.imageList[row].isIris = movie != nil
                     // TODO: re-compress: should be less than 3 secs?
                     // TODO: update duration metadata
                 }
@@ -211,11 +211,11 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     }
 
     @IBAction func removeImage(_ sender: Any?) {
-        guard case 0..<imageItems.count = imageListTableView.selectedRow else { return }
-        document?.watchface = document?.watchface ※ { watchface in
-            let removed = watchface?.resources.images.imageList.remove(at: imageListTableView.selectedRow)
-            [removed?.imageURL, removed?.irisVideoURL].compactMap {$0}.forEach {
-                watchface?.resources.files.removeValue(forKey: $0)
+        guard case 0..<imageItems.count = imageListTableView.selectedRow, let watchface = document?.watchface else { return }
+        document?.watchface = watchface ※ { watchface in
+            let removed = watchface.resources.images.imageList.remove(at: imageListTableView.selectedRow)
+            [removed.imageURL, removed.irisVideoURL].forEach {
+                watchface.resources.files.removeValue(forKey: $0)
             }
         }
         reloadDocument()
