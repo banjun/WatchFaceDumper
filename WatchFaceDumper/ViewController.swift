@@ -119,6 +119,14 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
                     watchface.resources.files[imageURL] = jpeg
                     // TODO: resize
+                    watchface.resources.images.imageList[row].cropX = 0
+                    watchface.resources.images.imageList[row].cropY = 0
+                    watchface.resources.images.imageList[row].cropW = Double(image?.size.width ?? 0)
+                    watchface.resources.images.imageList[row].cropH = Double(image?.size.height ?? 0)
+                    watchface.resources.images.imageList[row].originalCropX = 0
+                    watchface.resources.images.imageList[row].originalCropY = 0
+                    watchface.resources.images.imageList[row].originalCropW = Double(image?.size.width ?? 0)
+                    watchface.resources.images.imageList[row].originalCropH = Double(image?.size.height ?? 0)
                 }
                 self.reloadDocument()
             }
@@ -128,8 +136,11 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                     let irisVideoURL = watchface.resources.images.imageList[row].irisVideoURL
                     watchface.resources.files[irisVideoURL] = movie
                     watchface.resources.images.imageList[row].isIris = movie != nil
+                    watchface.resources.images.imageList[row].irisDuration = 2.3
+                    watchface.resources.images.imageList[row].irisStillDisplayTime = 1.4
                     // TODO: re-compress: should be less than 3 secs?
                     // TODO: update duration metadata
+
                 }
                 self.reloadDocument()
             }
@@ -137,7 +148,38 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     }
 
     @IBAction func addImage(_ sender: Any?) {
-        NSLog("%@", "not yet implemented")
+        document.watchface = document.watchface ※ { watchface in
+            // TODO: get image and compress
+            let imageData: Data? = Data()
+            let movieData: Data? = nil
+
+            let filenameBase = UUID().uuidString
+
+            let item = Watchface.Resources.Metadata.Item(
+                topAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                leftAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                bottomAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                rightAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                imageURL: "\(filenameBase).jpg",
+                irisDuration: 0,
+                irisStillDisplayTime: 0,
+                irisVideoURL: "\(filenameBase).mov",
+                isIris: movieData != nil,
+                localIdentifier: "",
+                modificationDate: Date(),
+                cropH: 0,
+                cropW: 0,
+                cropX: 0,
+                cropY: 0,
+                originalCropH: 0,
+                originalCropW: 0,
+                originalCropX: 0,
+                originalCropY: 0)
+            watchface.resources.images.imageList.append(item)
+            watchface.resources.files[item.imageURL] = imageData
+            watchface.resources.files[item.irisVideoURL] = movieData
+        }
+        reloadDocument()
     }
 
     @IBAction func removeImage(_ sender: Any?) {
