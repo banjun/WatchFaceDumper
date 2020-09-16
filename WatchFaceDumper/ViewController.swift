@@ -28,8 +28,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         $0.usesAutomaticRowHeights = true
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageItem")) ※ {$0.title = "Resources/Images"})
     }
-    private lazy var addImageButton: NSButton = .init(title: "Add Image", target: self, action: #selector(addImage(_:)))
-    private lazy var removeImageButton: NSButton = .init(title: "Remove Image", target: self, action: #selector(removeImage(_:)))
     private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
     private let complicationsBottomLabel = NSTextField(labelWithString: "complications.bottom")
 
@@ -78,19 +76,14 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 sv.hasVerticalScroller = true
                 sv.documentView = imageListTableView
             },
-            "addImage": addImageButton,
-            "removeImage": removeImageButton,
             "complicationsTop": complicationsTopLabel,
             "complicationsBottom": complicationsBottomLabel,
         ])
         autolayout("H:|-pp-[snapshots]-pp-[imageList(>=240)]|")
         autolayout("H:|-pp-[complicationsTop]-pp-[imageList]")
         autolayout("H:|-pp-[complicationsBottom]-pp-[imageList]")
-        autolayout("H:[snapshots]-pp-[addImage]-[removeImage(addImage)]-|")
-        autolayout("V:|-(>=pp)-[snapshots]-(>=pp)-[complicationsTop]")
-        autolayout("V:[complicationsTop]-[complicationsBottom]-pp-|")
-        autolayout("V:|[imageList]-[addImage]-pp-|")
-        autolayout("V:|[imageList]-[removeImage]-pp-|")
+        autolayout("V:|-(>=pp)-[snapshots]-(>=pp)-[complicationsTop]-[complicationsBottom]-pp-|")
+        autolayout("V:|[imageList]|")
 
         reloadDocument()
     }
