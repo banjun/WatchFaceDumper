@@ -81,10 +81,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface?.metadata.complications_names.bottom ?? "") + " " + (watchface?.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "" as String)
     }
 
-    struct ImageItem {
-        var image: NSImage?
-        var movie: Data?
-    }
+    typealias ImageItem = ImageItemRowView.ImageItem
     var imageItems: [ImageItem] = [] {
         didSet { imageListTableView.reloadData() }
     }
@@ -114,95 +111,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 }
                 self.reloadDocument()
             }
-        }
-    }
-
-    final class ImageItemRowView: NSTableRowView {
-        private let imageView = NSImageView() ※ {
-            $0.imageFrameStyle = .photo
-            $0.isEditable = true
-        }
-        private let movieView = EditableAVPlayerView()
-        var imageDidChange: ((NSImage?) -> Void)?
-        var movieDidChange: ((Data?) -> Void)?
-
-        init(item: ImageItem) {
-            super.init(frame: .zero)
-
-            let autolayout = northLayoutFormat([:], [
-                "size": NSTextField(labelWithString: item.image.map {"\(Int($0.size.width))×\(Int($0.size.height))"} ?? "no image"),
-                "image": imageView ※ {
-                    $0.target = self
-                    $0.action = #selector(imageViewDidChangeValue(_:))
-                    $0.image = item.image
-                    if let image = item.image {
-                        $0.widthAnchor.constraint(equalTo: $0.heightAnchor, multiplier: image.size.width / image.size.height).isActive = true
-                    }
-                },
-                "movie": item.movie.map { data in
-                    movieView ※ {
-                        $0.controlsStyle = .minimal
-                        $0.data = data
-                        $0.dataDidChange = { [weak self] data in
-                            self?.movieDidChange?(data)
-                        }
-                    }
-                } ?? NSView(),
-            ])
-            autolayout("H:|-[size]|") // typically "384x480" (38mm)
-            autolayout("H:|-[image]-[movie(image)]|")
-            autolayout("V:|-[size]-[image(240)]-|")
-            autolayout("V:|-[size]-[movie(image)]-|")
-        }
-
-        required init?(coder: NSCoder) {fatalError("init(coder:) has not been implemented")}
-
-        @IBAction func imageViewDidChangeValue(_ sender: Any?) {
-            imageDidChange?(imageView.image)
-        }
-    }
-
-    final class EditableAVPlayerView: AVPlayerView, AVAssetResourceLoaderDelegate {
-        private var asset: AVURLAsset? {
-            didSet {
-                asset?.resourceLoader.setDelegate(self, queue: .main)
-                player = asset.map {AVPlayer(playerItem: AVPlayerItem(asset: $0))}
-            }
-        }
-        var data: Data? {
-            didSet {
-                asset = AVURLAsset(url: URL(string: "data://")!)
-                dataDidChange?(data)
-            }
-        }
-        var dataDidChange: ((Data?) -> Void)?
-
-        override init(frame frameRect: NSRect) {
-            super.init(frame: frameRect)
-            registerForDraggedTypes([.fileURL])
-        }
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-            .copy
-        }
-        override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-            guard let data = (NSURL(from: sender.draggingPasteboard).flatMap {try? Data(contentsOf: $0 as URL)}) else { return false }
-            self.data = data
-            return true
-        }
-
-        func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-            guard let data = self.data else { return true }
-            loadingRequest.contentInformationRequest?.contentType = "com.apple.quicktime-movie"
-            loadingRequest.contentInformationRequest?.contentLength = Int64(data.count)
-            loadingRequest.contentInformationRequest?.isByteRangeAccessSupported = true
-            if let dataRequest = loadingRequest.dataRequest {
-                dataRequest.respond(with: data[(dataRequest.requestedOffset)..<(dataRequest.requestedOffset + Int64(dataRequest.requestedLength))])
-            }
-            loadingRequest.finishLoading()
-            return true
         }
     }
 
