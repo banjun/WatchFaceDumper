@@ -1,10 +1,20 @@
 import Cocoa
 import ZIPFoundation
+import Ikemen
 
 class Document: NSDocument {
     var watchface: Watchface?
+    private var isLossyReading = false
+    private var allowLossyAutosaving = false
 
     override class var autosavesInPlace: Bool { true } // enables (- Edited) mark, duplicates and reverts
+
+    override func checkAutosavingSafety() throws {
+        try super.checkAutosavingSafety()
+        if isLossyReading && !allowLossyAutosaving {
+            throw NSError(domain: "WatchFaceDumper", code: 0, userInfo: [NSLocalizedDescriptionKey: "watchface file contains some additional information that cannot be handled in this app when saved"])
+        }
+    }
 
     override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
@@ -22,8 +32,10 @@ class Document: NSDocument {
     }
 
     override func read(from fileWrapper: FileWrapper, ofType typeName: String) throws {
-        self.watchface = try Watchface(fileWrapper: fileWrapper)
-        updateChangeCount(.changeDone) // temporarily workaround for enabling (- Edited) mark
+        self.watchface = (try Watchface(fileWrapper: fileWrapper)) ※ {
+            isLossyReading = !$0.isEqualToFileWrapper(anotherFileWrapper: fileWrapper)
+            allowLossyAutosaving = false
+        }
     }
 
     override func data(ofType typeName: String) throws -> Data {

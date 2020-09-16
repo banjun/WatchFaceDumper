@@ -69,7 +69,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
     func reloadDocument() {
         let watchface = document?.watchface
-        NSLog("%@", "\(watchface)")
+        // NSLog("%@", "\(watchface)")
         snapshot.image = watchface.flatMap {NSImage(data: $0.snapshot)}
         noBordersSnapshot.image = watchface.flatMap {NSImage(data: $0.no_borders_snapshot)}
 

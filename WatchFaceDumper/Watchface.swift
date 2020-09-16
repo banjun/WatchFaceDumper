@@ -262,6 +262,53 @@ extension Watchface {
             resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
         )
     }
+
+    /// check a lossy reading
+    func isEqualToFileWrapper(anotherFileWrapper right: FileWrapper) -> Bool {
+        guard let left = try? FileWrapper(watchface: self) else { return false }
+        guard left.isDirectory == right.isDirectory else { return false }
+
+        func isEqualJSONFiles(left: FileWrapper, right: FileWrapper, filename: String) -> Bool {
+            let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
+            let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
+            if l != r {
+                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+            }
+            return l == r
+        }
+        func isEqualPropertyListFiles(left: FileWrapper, right: FileWrapper, filename: String) -> Bool {
+            let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
+            let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
+            if l != r {
+                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+            }
+            return l == r
+        }
+        func isEqualDataFiles(left: FileWrapper, right: FileWrapper, filename: String) -> Bool {
+            let l = left.fileWrappers?[filename]?.regularFileContents
+            let r = right.fileWrappers?[filename]?.regularFileContents
+            if l != r {
+                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+            }
+            return l == r
+        }
+
+        guard left.fileWrappers?.count == right.fileWrappers?.count else { return false }
+        guard isEqualJSONFiles(left: left, right: right, filename: "face.json") else { return false }
+        guard isEqualJSONFiles(left: left, right: right, filename: "metadata.json") else { return false }
+        guard isEqualDataFiles(left: left, right: right, filename: "snapshot.png") else { return false }
+        guard isEqualDataFiles(left: left, right: right, filename: "no_borders_snapshot.png") else { return false }
+
+        guard let leftResources = left.fileWrappers?["Resources"],
+              let rightResources = right.fileWrappers?["Resources"] else { return false }
+        guard leftResources.fileWrappers?.count == rightResources.fileWrappers?.count else { return false }
+        guard isEqualPropertyListFiles(left: leftResources, right: rightResources, filename: "Images.plist") else { return false }
+        for (filename, _) in resources.files {
+            guard isEqualDataFiles(left: leftResources, right: rightResources, filename: filename) else { return false }
+        }
+
+        return true
+    }
 }
 
 extension FileWrapper {
