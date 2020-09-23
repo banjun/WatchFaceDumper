@@ -213,8 +213,16 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
         switch item {
         case let array as [Any]: return "Array (\(array.count) Items)"
-        case let dictionary as [String: Any]: return  "Dictionary (\(dictionary.count) Pairs)"
-        case let (key, value) as (String, Any?): return "\(key) = \(value ?? "(null)")"
+        case let (key, array) as (String, [Any]):
+            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "Array (\(array.count) Items)")]
+                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
+        case let dictionary as [String: Any]: return "Dictionary (\(dictionary.count) Pairs)"
+        case let (key, dictionary) as (String, [String: Any]):
+            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "Dictionary (\(dictionary.count) Pairs)")]
+                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
+        case let (key, value) as (String, Any?):
+            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "\(value ?? "(null)")")]
+                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
         default: return item
         }
     }
