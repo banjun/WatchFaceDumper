@@ -171,8 +171,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         }
     }
 
-    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool { false }
-
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         switch item {
         case nil: return 1
@@ -225,6 +223,13 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 .reduce(into: NSMutableAttributedString()) {$0.append($1)}
         default: return item
         }
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool { true }
+
+    func outlineView(_ outlineView: NSOutlineView, willDisplayCell cell: Any, for tableColumn: NSTableColumn?, item: Any) {
+        (cell as? NSTextFieldCell)?.isEditable = false
+        (cell as? NSTextFieldCell)?.isSelectable = true
     }
 
     func splitView(_ splitView: NSSplitView, constrainMinCoordinate proposedMinimumPosition: CGFloat, ofSubviewAt dividerIndex: Int) -> CGFloat {
