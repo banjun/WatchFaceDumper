@@ -3,7 +3,7 @@ import NorthLayout
 import Ikemen
 import AVKit
 
-final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSOutlineViewDelegate, NSOutlineViewDataSource, NSSplitViewDelegate {
+final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSSplitViewDelegate {
     var document: Document {
         didSet {
             reloadDocument()
@@ -21,6 +21,17 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private let noBordersSnapshot = NSImageView()
     private let noBordersSnapshotLabel = NSTextField(labelWithString: "no_borders_snapshot") ※ {
         $0.alignment = .center
+    }
+    private lazy var metadataViewModel: MetadataViewModel = .init() ※ {
+        $0.reloadAndExpand = { [weak self] in
+            self?.metadataOutlineView.reloadData()
+            self?.metadataOutlineView.expandItem(nil, expandChildren: true)
+        }
+    }
+    private lazy var metadataOutlineView: NSOutlineView = .init() ※ {
+        $0.delegate = metadataViewModel
+        $0.dataSource = metadataViewModel
+        $0.addTableColumn(.init(identifier: .init(rawValue: "Metadata")) ※ {$0.title = "metadta.json & face.json"})
     }
     private lazy var imageListSplitView = NSSplitView() ※ { split in
         split.delegate = self
@@ -40,9 +51,15 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         $0.usesAutomaticRowHeights = true
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageItem")) ※ {$0.title = "Resources/"})
     }
-    private lazy var imageListOutlineView: NSOutlineView = .init(frame: .zero) ※ {
-        $0.delegate = self
-        $0.dataSource = self
+    private(set) lazy var imageListOutlineViewModel = ImageListOutlineViewModel() ※ {
+        $0.reloadAndExpand = { [weak self] in
+            self?.imageListOutlineView.reloadData()
+            self?.imageListOutlineView.expandItem(nil, expandChildren: true)
+        }
+    }
+    private(set) lazy var imageListOutlineView: NSOutlineView = .init() ※ {
+        $0.delegate = imageListOutlineViewModel
+        $0.dataSource = imageListOutlineViewModel
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageList")) ※ {$0.title = "Resources/Images.plist"})
     }
     private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
@@ -89,14 +106,19 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                     autolayout("V:|[snapshot]-[label]|")
                 })
             },
+            "metadata": NSScrollView() ※ { sv in
+                sv.hasVerticalScroller = true
+                sv.documentView = metadataOutlineView
+            },
             "imageListSplitView": imageListSplitView,
             "complicationsTop": complicationsTopLabel,
             "complicationsBottom": complicationsBottomLabel,
         ])
         autolayout("H:|-pp-[snapshots]-pp-[imageListSplitView(>=400)]|")
+        autolayout("H:|-pp-[metadata]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsTop]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsBottom]-pp-[imageListSplitView]")
-        autolayout("V:|-(>=pp)-[snapshots]-(>=pp)-[complicationsTop]-[complicationsBottom]-pp-|")
+        autolayout("V:|-pp-[snapshots]-pp-[metadata(>=200)]-[complicationsTop]-[complicationsBottom]-pp-|")
         autolayout("V:|[imageListSplitView]|")
 
         reloadDocument()
@@ -108,13 +130,14 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         snapshot.image = NSImage(data: watchface.snapshot)
         noBordersSnapshot.image = NSImage(data: watchface.no_borders_snapshot)
 
+        metadataViewModel.setWatchface(watchface)
+
         let resources = watchface.resources
         imageItems = resources.images.imageList
             .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
             .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
 
-        imageListPropertyList = (try? PropertyListEncoder().encode(watchface.resources.images.imageList))
-            .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)} as? [Any]
+        imageListOutlineViewModel.setWatchface(watchface)
 
         complicationsTopLabel.stringValue = "complications.top: " + (watchface.metadata.complications_names.top) + " " +  (watchface.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "")
         complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface.metadata.complications_names.bottom) + " " + (watchface.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "")
@@ -162,74 +185,6 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 self.reloadDocument()
             }
         }
-    }
-
-    private var imageListPropertyList: [Any]? {
-        didSet {
-            imageListOutlineView.reloadData()
-            imageListOutlineView.expandItem(nil, expandChildren: true)
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        switch item {
-        case nil: return 1
-        case let array as [Any]: return array.count
-        case let dictionary as [String: Any]: return dictionary.count
-        case let (_, array) as (String, [Any]): return array.count
-        case let (_, dictionary) as (String, [String: Any]): return dictionary.count
-        default: return 0
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-        guard let plist = imageListPropertyList else { return "(null)" }
-        switch item {
-        case nil: return plist
-        case let array as [Any],
-             let (_, array) as (String, [Any]):
-            return array[index]
-        case let dictionary as [String: Any],
-             let (_, dictionary) as (String, [String: Any]):
-            let key = Array(dictionary.keys.sorted())[index]
-            let value = dictionary[key]
-            return (key, value)
-        default: return "(unknown)"
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
-        switch item {
-        case is [Any]: return true
-        case is [String: Any]: return true
-        case is (String, [Any]): return true
-        case is (String, [String: Any]): return true
-        default: return false
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
-        switch item {
-        case let array as [Any]: return "Array (\(array.count) Items)"
-        case let (key, array) as (String, [Any]):
-            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "Array (\(array.count) Items)")]
-                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
-        case let dictionary as [String: Any]: return "Dictionary (\(dictionary.count) Pairs)"
-        case let (key, dictionary) as (String, [String: Any]):
-            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "Dictionary (\(dictionary.count) Pairs)")]
-                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
-        case let (key, value) as (String, Any?):
-            return [NSAttributedString(string: "\(key) = ", attributes: [.foregroundColor: NSColor.secondaryLabelColor]), NSAttributedString(string: "\(value ?? "(null)")")]
-                .reduce(into: NSMutableAttributedString()) {$0.append($1)}
-        default: return item
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool { true }
-
-    func outlineView(_ outlineView: NSOutlineView, willDisplayCell cell: Any, for tableColumn: NSTableColumn?, item: Any) {
-        (cell as? NSTextFieldCell)?.isEditable = false
-        (cell as? NSTextFieldCell)?.isSelectable = true
     }
 
     func splitView(_ splitView: NSSplitView, constrainMinCoordinate proposedMinimumPosition: CGFloat, ofSubviewAt dividerIndex: Int) -> CGFloat {
