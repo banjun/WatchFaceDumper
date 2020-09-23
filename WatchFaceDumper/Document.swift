@@ -5,7 +5,7 @@ import Ikemen
 class Document: NSDocument {
     var watchface: Watchface = .init(
         metadata: .init(complication_sample_templates: .init(), complications_names: .init(), complications_item_ids: .init()),
-        face: .init(customization: .init()),
+        face: .init(face_type: .photos, customization: .init(color: nil, content: "custom", position: nil, style: nil)),
         snapshot: Data(),
         no_borders_snapshot: Data(),
         resources: .init(images: .init(imageList: []), files: [:]))
@@ -33,9 +33,14 @@ class Document: NSDocument {
     }
 
     override func read(from fileWrapper: FileWrapper, ofType typeName: String) throws {
-        self.watchface = (try Watchface(fileWrapper: fileWrapper)) ※ {
-            isLossyReading = !$0.isEqualToFileWrapper(anotherFileWrapper: fileWrapper)
-            allowLossyAutosaving = false
+        do {
+            self.watchface = (try Watchface(fileWrapper: fileWrapper)) ※ {
+                isLossyReading = !$0.isEqualToFileWrapper(anotherFileWrapper: fileWrapper)
+                allowLossyAutosaving = false
+            }
+        } catch {
+            NSLog("%@", "error reading \(fileWrapper): \(String(describing: error))")
+            throw error
         }
     }
 

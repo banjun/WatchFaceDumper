@@ -10,10 +10,22 @@ struct Watchface {
         struct ComplicationSampleTemplate: Codable {
             var top: ComplicationTemplate?
             var bottom: ComplicationTemplate?
+            var top_left: ComplicationTemplate?
+            var top_right: ComplicationTemplate?
+            var bottom_center: ComplicationTemplate?
+
+            private enum CodingKeys: String, CodingKey {
+                case top, bottom
+                case top_left = "top-left"
+                case top_right = "top-right"
+                case bottom_center = "bottom-center"
+            }
 
             enum ComplicationTemplate: Codable {
                 case utilitarianSmallFlat(CLKComplicationTemplateUtilitarianSmallFlat)
                 case utilitarianLargeFlat(CLKComplicationTemplateUtilitarianLargeFlat)
+                case circularSmallSimpleText(CLKComplicationTemplateCircularSmallSimpleText)
+                case circularSmallSimpleImage(CLKComplicationTemplateCircularSmallSimpleImage)
 
                 init(from decoder: Decoder) throws {
                     if let t = ((try? CLKComplicationTemplateUtilitarianSmallFlat(from: decoder))
@@ -26,6 +38,16 @@ struct Watchface {
                         self = .utilitarianLargeFlat(t)
                         return
                     }
+                    if let t = ((try? CLKComplicationTemplateCircularSmallSimpleText(from: decoder))
+                                    .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleText" ? $0 : nil}) {
+                        self = .circularSmallSimpleText(t)
+                        return
+                    }
+                    if let t = ((try? CLKComplicationTemplateCircularSmallSimpleImage(from: decoder))
+                                    .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleImage" ? $0 : nil}) {
+                        self = .circularSmallSimpleImage(t)
+                        return
+                    }
                     throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type"))
                 }
 
@@ -33,6 +55,8 @@ struct Watchface {
                     switch self {
                     case .utilitarianSmallFlat(let t): try t.encode(to: encoder)
                     case .utilitarianLargeFlat(let t): try t.encode(to: encoder)
+                    case .circularSmallSimpleText(let t): try t.encode(to: encoder)
+                    case .circularSmallSimpleImage(let t): try t.encode(to: encoder)
                     }
                 }
             }
@@ -119,39 +143,124 @@ struct Watchface {
                 var version: Int = 30000
                 var creationDate: Date = .init()
                 var textProvider: CLKTextProvider = .date(.init())
+            }
 
+            struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
+                var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
+                var version: Int = 30000
+                var creationDate: Date = .init()
+                var textProvider: CLKTextProvider = .date(.init())
+                var tintColor: TintColor
+            }
+
+            struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
+                var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
+                var version: Int = 30000
+                var creationDate: Date = .init()
+                var imageProvider: ImageProvider
+                var tintColor: TintColor
+
+                struct ImageProvider: Codable {
+                    var onePieceImage: OnePieceImage
+                    struct OnePieceImage: Codable {
+                        var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
+                        var scale: Int // 3
+                        var renderingMode: Int // 0
+
+                        private enum CodingKeys: String, CodingKey {
+                            case file_name = "file name"
+                            case scale, renderingMode
+                        }
+                    }
+                }
+            }
+
+            struct TintColor: Codable {
+                var red: Double
+                var green: Double
+                var blue: Double
+                var alpha: Double
             }
         }
 
         var complications_names: ComplicationsNames
         struct ComplicationsNames: Codable {
-            var top: String = "Off"
-            var bottom: String = "Off"
+            var top: String? = "Off"
+            var bottom: String? = "Off"
+            var top_left: String?
+            var top_right: String?
+            var bottom_center: String?
+
+            private enum CodingKeys: String, CodingKey {
+                case top, bottom
+                case top_left = "top-left"
+                case top_right = "top-right"
+                case bottom_center = "bottom-center"
+            }
         }
 
         var complications_item_ids: ComplicationsItemIDs
         struct ComplicationsItemIDs: Codable {
+            var top_left: Int?
+            var top_right: Int?
+            var bottom_center: Int?
+
+            private enum CodingKeys: String, CodingKey {
+                case top_left = "top-left"
+                case top_right = "top-right"
+                case bottom_center = "bottom-center"
+            }
+        }
+
+        var complications_bundle_ids: ComplicationsBundleIDs?
+        struct ComplicationsBundleIDs: Codable {
+            var top_left: String? // com.apple.weather.watchapp
+            var top_right: String? // com.apple.HeartRate
+            var bottom_center: String? // com.apple.NanoCalendar
+
+            private enum CodingKeys: String, CodingKey {
+                case top_left = "top-left"
+                case top_right = "top-right"
+                case bottom_center = "bottom-center"
+            }
         }
     }
 
     var face: Face
     struct Face: Codable {
         var version: Int = 4
+
+        var face_type: FaceType
+        enum FaceType: String, Codable {
+            case photos // has [top, bottom]
+            case kaleidoscope // has [top-left, top-right, bottom-center]
+        }
+        var resource_directory: Bool = true
+
         var customization: Customization
         struct Customization: Codable {
-            var color: String = "none"
-            var content: String = "custom"
-            var position: String = "top"
+            var color: String? // photo: "none"
+            var content: String // photo: "custom", kaleidoscope: "asset custom"
+            var position: String? // "top"
+            var style: String? // kaleidoscope: "radial"
         }
-
-        var face_type: String = "photos"
-        var resource_directory: Bool = true
 
         var complications: Complications?
         struct Complications: Codable {
-            var top: Item? = Item()
+            var top: Item?
+            var top_left: Item?
+            var top_right: Item?
+            var bottom_center: Item?
+
             struct Item: Codable {
-                var app: String = "date"
+                var app: String // "date", "weather", "heartrate"
+            }
+
+            private enum CodingKeys: String, CodingKey {
+                case top
+                case top_left = "top left"
+                case top_right = "top right"
+                case bottom_center = "bottom center"
             }
         }
 
@@ -193,10 +302,10 @@ struct Watchface {
                     var version: Int = 1
                 }
 
-                var topAnalysis: Analysis
-                var leftAnalysis: Analysis
-                var bottomAnalysis: Analysis
-                var rightAnalysis: Analysis
+                var topAnalysis: Analysis? // photos has some, kaleidoscope has none
+                var leftAnalysis: Analysis? // photos has some, kaleidoscope has none
+                var bottomAnalysis: Analysis? // photos has some, kaleidoscope has none
+                var rightAnalysis: Analysis? // photos has some, kaleidoscope has none
 
                 var imageURL: String
 
@@ -219,6 +328,13 @@ struct Watchface {
                 var originalCropY: Double
             }
         }
+    }
+
+    var complicationData: ComplicationData? = nil
+    struct ComplicationData {
+        var top_left: [String: Data]? // filename -> content
+        var top_right: [String: Data]? // filename -> content
+        var bottom_center: [String: Data]? // filename -> content
     }
 }
 
@@ -253,13 +369,19 @@ extension Watchface {
         }
         let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
 
+        let complicationData = fileWrapper.fileWrappers?["complicationData"]?.fileWrappers
+
         self.init(
             metadata: metadata,
             face: face,
             snapshot: snapshot,
             no_borders_snapshot: no_borders_snapshot,
 //            device_border_snapshot: device_border_snapshot,
-            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents})
+            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents}), // TODO: .pathfinders for kaleidoscope
+            complicationData: complicationData.map {Watchface.ComplicationData(
+                top_left: $0["top-left"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}},
+                top_right: $0["top-right"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}},
+                bottom_center: $0["bottom-center"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}})}
         )
     }
 
@@ -318,11 +440,22 @@ extension FileWrapper {
             "metadata.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(watchface.metadata)),
             "snapshot.png": FileWrapper(regularFileWithContents: watchface.snapshot),
             "no_borders_snapshot.png": FileWrapper(regularFileWithContents: watchface.no_borders_snapshot),
-//            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
-            "Resources": FileWrapper(
-                directoryWithFileWrappers:
-                    watchface.resources.files.mapValues {FileWrapper(regularFileWithContents: $0)}.merging(
-                        ["Images.plist": FileWrapper(regularFileWithContents: try PropertyListEncoder().encode(watchface.resources.images))], uniquingKeysWith: {a,b in a})),
+            //            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
+            "Resources": try FileWrapper(resources: watchface.resources),
+            "complicationData": watchface.complicationData.map {FileWrapper(complicationData: $0)},
+        ].compactMapValues {$0})
+    }
+
+    convenience init(resources: Watchface.Resources) throws {
+        self.init(directoryWithFileWrappers: resources.files.mapValues {FileWrapper(regularFileWithContents: $0)}.merging(
+                    ["Images.plist": FileWrapper(regularFileWithContents: try PropertyListEncoder().encode(resources.images))], uniquingKeysWith: {a,b in a}))
+    }
+
+    convenience init(complicationData: Watchface.ComplicationData) {
+        self.init(directoryWithFileWrappers: [
+            "top-left": complicationData.top_left.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})},
+            "top-right": complicationData.top_right.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})},
+            "bottom-center": complicationData.bottom_center.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})}
         ].compactMapValues {$0})
     }
 }

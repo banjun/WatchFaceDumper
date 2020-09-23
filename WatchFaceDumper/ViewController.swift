@@ -10,6 +10,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         }
     }
 
+    private let faceTypeLabel = NSTextField(labelWithString: "")
     private let snapshotsStackView = NSStackView() ※ {
         $0.orientation = .horizontal
         $0.alignment = .centerY
@@ -80,6 +81,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         super.viewDidLoad()
 
         let autolayout = view.northLayoutFormat(["pp": 16], [
+            "type": faceTypeLabel,
             "snapshots": snapshotsStackView ※ {
                 $0.addArrangedSubview(NSView() ※ {
                     let autolayout = $0.northLayoutFormat([:], [
@@ -114,11 +116,12 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             "complicationsTop": complicationsTopLabel,
             "complicationsBottom": complicationsBottomLabel,
         ])
+        autolayout("H:|-pp-[type]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[snapshots]-pp-[imageListSplitView(>=400)]|")
         autolayout("H:|-pp-[metadata]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsTop]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsBottom]-pp-[imageListSplitView]")
-        autolayout("V:|-pp-[snapshots]-pp-[metadata(>=200)]-[complicationsTop]-[complicationsBottom]-pp-|")
+        autolayout("V:|-pp-[type]-[snapshots]-pp-[metadata(>=200)]-[complicationsTop]-[complicationsBottom]-pp-|")
         autolayout("V:|[imageListSplitView]|")
 
         reloadDocument()
@@ -127,6 +130,10 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     func reloadDocument() {
         let watchface = document.watchface
         // NSLog("%@", "\(watchface)")
+
+        let faceType = watchface.face.face_type.rawValue
+        faceTypeLabel.stringValue = faceType.first!.uppercased() + faceType.dropFirst() + " watch face"
+
         snapshot.image = NSImage(data: watchface.snapshot)
         noBordersSnapshot.image = NSImage(data: watchface.no_borders_snapshot)
 
@@ -139,8 +146,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
         imageListOutlineViewModel.setWatchface(watchface)
 
-        complicationsTopLabel.stringValue = "complications.top: " + (watchface.metadata.complications_names.top) + " " +  (watchface.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "")
-        complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface.metadata.complications_names.bottom) + " " + (watchface.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "")
+        complicationsTopLabel.stringValue = "complications.top: " + (watchface.metadata.complications_names.top ?? "" as String) + " " +  (watchface.metadata.complication_sample_templates.top?.sampleText.map {"(\($0))"} ?? "")
+        complicationsBottomLabel.stringValue = "complications.bottom: " + (watchface.metadata.complications_names.bottom ?? "" as String) + " " + (watchface.metadata.complication_sample_templates.bottom?.sampleText.map {"(\($0))"} ?? "")
     }
 
     typealias ImageItem = ImageItemRowView.ImageItem
@@ -247,6 +254,8 @@ extension Watchface.Metadata.ComplicationSampleTemplate.ComplicationTemplate {
         switch self {
         case .utilitarianSmallFlat(let t): return t.textProvider.sampleText
         case .utilitarianLargeFlat(let t): return t.textProvider.sampleText
+        case .circularSmallSimpleText(let t): return t.textProvider.sampleText
+        case .circularSmallSimpleImage: return "image"
         }
     }
 }
