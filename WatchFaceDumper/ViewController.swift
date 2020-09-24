@@ -38,10 +38,12 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         split.delegate = self
         split.isVertical = true
         split.addArrangedSubview(NSScrollView() ※ { sv in
+            sv.hasHorizontalScroller = true
             sv.hasVerticalScroller = true
             sv.documentView = imageListTableView
         })
         split.addArrangedSubview(NSScrollView() ※ { sv in
+            sv.hasHorizontalScroller = true
             sv.hasVerticalScroller = true
             sv.documentView = imageListOutlineView
         })
@@ -109,6 +111,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 })
             },
             "metadata": NSScrollView() ※ { sv in
+                sv.hasHorizontalScroller = true
                 sv.hasVerticalScroller = true
                 sv.documentView = metadataOutlineView
             },
