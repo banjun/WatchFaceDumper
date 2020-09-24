@@ -142,21 +142,21 @@ struct Watchface {
         struct CLKComplicationTemplateUtilitarianSmallFlat: Codable {
             var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
             var version: Int = 30000
-            var creationDate: Date = .init()
+            var creationDate: Double = Date().timeIntervalSince1970
             var textProvider: CLKTextProvider = .date(.init())
         }
 
         struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
             var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
             var version: Int = 30000
-            var creationDate: Date = .init()
+            var creationDate: Double = Date().timeIntervalSince1970
             var textProvider: CLKTextProvider = .date(.init())
         }
 
         struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
             var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
             var version: Int = 30000
-            var creationDate: Date = .init()
+            var creationDate: Double = Date().timeIntervalSince1970
             var textProvider: CLKTextProvider = .date(.init())
             var tintColor: TintColor
         }
@@ -164,7 +164,7 @@ struct Watchface {
         struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
             var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
             var version: Int = 30000
-            var creationDate: Date = .init()
+            var creationDate: Double = Date().timeIntervalSince1970
             var imageProvider: ImageProvider
             var tintColor: TintColor
 
