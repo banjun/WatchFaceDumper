@@ -217,19 +217,34 @@ struct Watchface {
         var complications: Complications?
         struct Complications: Codable {
             var top: Item?
+            var bottom: Item?
             var top_left: Item?
             var top_right: Item?
             var bottom_center: Item?
 
-            struct Item: Codable {
-                var app: String // "date", "weather", "heartrate"
-            }
-
             private enum CodingKeys: String, CodingKey {
-                case top
+                case top, bottom
                 case top_left = "top left"
                 case top_right = "top right"
                 case bottom_center = "bottom center"
+            }
+
+            struct Item: Codable {
+                var app: String // "date", "weather", "heartrate", "com.apple.shortcuts.watch"
+                var `extension`: String? // "com.apple.shortcuts.watch"
+                var complication_descriptor: ComplicationDescriptor?
+
+                private enum CodingKeys: String, CodingKey {
+                    case app, `extension`
+                    case complication_descriptor = "complication descriptor"
+                }
+
+                struct ComplicationDescriptor: Codable {
+                    var displayName: String
+                    var supportedFamilies: [Int] // [0, 1, ..., 12]
+                    var identifier: String // UUID
+                    var userActivity: String // Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
+                }
             }
         }
 
