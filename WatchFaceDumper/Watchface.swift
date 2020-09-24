@@ -49,7 +49,10 @@ struct Watchface {
                     self = .circularSmallSimpleImage(t)
                     return
                 }
-                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type"))
+
+
+                let anyTemplate = try? CLKComplicationTemplateAny(from: decoder)
+                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type: \(anyTemplate?.class ?? "(unknown structure)")"))
             }
 
             func encode(to encoder: Encoder) throws {
@@ -59,6 +62,10 @@ struct Watchface {
                 case .circularSmallSimpleText(let t): try t.encode(to: encoder)
                 case .circularSmallSimpleImage(let t): try t.encode(to: encoder)
                 }
+            }
+
+            private struct CLKComplicationTemplateAny: Codable {
+                var `class`: String
             }
         }
 

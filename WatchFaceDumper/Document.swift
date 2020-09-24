@@ -40,7 +40,7 @@ class Document: NSDocument {
             }
         } catch {
             NSLog("%@", "error reading \(fileWrapper): \(String(describing: error))")
-            throw error
+            throw NSError(domain: (error as NSError).domain,code: (error as NSError).code, userInfo: (error as NSError).userInfo ※ {$0[NSLocalizedFailureReasonErrorKey] = "\n\nError Report:\n" + String(describing: error)})
         }
     }
 
