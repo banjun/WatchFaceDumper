@@ -6,190 +6,13 @@ struct Watchface {
         var version: Int = 2
         var device_size = 2 // 38mm, 42mm?
 
-        var complication_sample_templates: ComplicationSampleTemplate
-        struct ComplicationSampleTemplate: Codable {
-            var top: ComplicationTemplate?
-            var bottom: ComplicationTemplate?
-            var top_left: ComplicationTemplate?
-            var top_right: ComplicationTemplate?
-            var bottom_center: ComplicationTemplate?
-
-            private enum CodingKeys: String, CodingKey {
-                case top, bottom
-                case top_left = "top-left"
-                case top_right = "top-right"
-                case bottom_center = "bottom-center"
-            }
-
-            enum ComplicationTemplate: Codable {
-                case utilitarianSmallFlat(CLKComplicationTemplateUtilitarianSmallFlat)
-                case utilitarianLargeFlat(CLKComplicationTemplateUtilitarianLargeFlat)
-                case circularSmallSimpleText(CLKComplicationTemplateCircularSmallSimpleText)
-                case circularSmallSimpleImage(CLKComplicationTemplateCircularSmallSimpleImage)
-
-                init(from decoder: Decoder) throws {
-                    if let t = ((try? CLKComplicationTemplateUtilitarianSmallFlat(from: decoder))
-                                    .flatMap {$0.class == "CLKComplicationTemplateUtilitarianSmallFlat" ? $0 : nil}) {
-                        self = .utilitarianSmallFlat(t)
-                        return
-                    }
-                    if let t = ((try? CLKComplicationTemplateUtilitarianLargeFlat(from: decoder))
-                                    .flatMap {$0.class == "CLKComplicationTemplateUtilitarianLargeFlat" ? $0 : nil}) {
-                        self = .utilitarianLargeFlat(t)
-                        return
-                    }
-                    if let t = ((try? CLKComplicationTemplateCircularSmallSimpleText(from: decoder))
-                                    .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleText" ? $0 : nil}) {
-                        self = .circularSmallSimpleText(t)
-                        return
-                    }
-                    if let t = ((try? CLKComplicationTemplateCircularSmallSimpleImage(from: decoder))
-                                    .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleImage" ? $0 : nil}) {
-                        self = .circularSmallSimpleImage(t)
-                        return
-                    }
-                    throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type"))
-                }
-
-                func encode(to encoder: Encoder) throws {
-                    switch self {
-                    case .utilitarianSmallFlat(let t): try t.encode(to: encoder)
-                    case .utilitarianLargeFlat(let t): try t.encode(to: encoder)
-                    case .circularSmallSimpleText(let t): try t.encode(to: encoder)
-                    case .circularSmallSimpleImage(let t): try t.encode(to: encoder)
-                    }
-                }
-            }
-
-            enum CLKTextProvider: Codable {
-                case date(CLKDateTextProvider)
-                case time(CLKTimeTextProvider)
-                case compound(CLKCompoundTextProvider)
-                case simple(CLKSimpleTextProvider)
-
-                init(from decoder: Decoder) throws {
-                    if let p = ((try? CLKDateTextProvider(from: decoder))
-                                    .flatMap {$0.class == "CLKDateTextProvider" ? $0 : nil}) {
-                        self = .date(p)
-                        return
-                    }
-                    if let p = ((try? CLKTimeTextProvider(from: decoder))
-                                    .flatMap {$0.class == "CLKTimeTextProvider" ? $0 : nil}) {
-                        self = .time(p)
-                        return
-                    }
-                    if let p = ((try? CLKCompoundTextProvider(from: decoder))
-                                    .flatMap {$0.class == "CLKCompoundTextProvider" ? $0 : nil}) {
-                        self = .compound(p)
-                        return
-                    }
-                    if let p = ((try? CLKSimpleTextProvider(from: decoder))
-                                    .flatMap {$0.class == "CLKSimpleTextProvider" ? $0 : nil}) {
-                        self = .simple(p)
-                        return
-                    }
-                    throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown CLKTextProvider type"))
-                }
-
-                func encode(to encoder: Encoder) throws {
-                    switch self {
-                    case .date(let p): try p.encode(to: encoder)
-                    case .time(let p): try p.encode(to: encoder)
-                    case .compound(let p): try p.encode(to: encoder)
-                    case .simple(let p): try p.encode(to: encoder)
-                    }
-                }
-            }
-
-            struct CLKDateTextProvider: Codable {
-                var `class`: String = "CLKDateTextProvider"
-                var date: Date = .init()
-                var _uppercase: Bool = true
-                var calendarUnits: Int = 528
-            }
-
-            struct CLKTimeTextProvider: Codable {
-                var `class`: String = "CLKTimeTextProvider"
-                var date: Date = .init()
-                var timeZone: String = "US/Pacific"
-            }
-
-            struct CLKSimpleTextProvider: Codable {
-                var `class`: String = "CLKSimpleTextProvider"
-                var text: String = "サンフランシスコ"
-            }
-
-            struct CLKCompoundTextProvider: Codable {
-                var `class`: String = "CLKCompoundTextProvider"
-                var textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())]
-                var format_segments: [String] = ["", " ", ""]
-
-                private enum CodingKeys: String, CodingKey {
-                    case `class`
-                    case textProviders
-                    case format_segments = "format segments"
-                }
-            }
-
-            struct CLKComplicationTemplateUtilitarianSmallFlat: Codable {
-                var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
-                var version: Int = 30000
-                var creationDate: Date = .init()
-                var textProvider: CLKTextProvider = .date(.init())
-            }
-
-            struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
-                var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
-                var version: Int = 30000
-                var creationDate: Date = .init()
-                var textProvider: CLKTextProvider = .date(.init())
-            }
-
-            struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
-                var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
-                var version: Int = 30000
-                var creationDate: Date = .init()
-                var textProvider: CLKTextProvider = .date(.init())
-                var tintColor: TintColor
-            }
-
-            struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
-                var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
-                var version: Int = 30000
-                var creationDate: Date = .init()
-                var imageProvider: ImageProvider
-                var tintColor: TintColor
-
-                struct ImageProvider: Codable {
-                    var onePieceImage: OnePieceImage
-                    struct OnePieceImage: Codable {
-                        var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
-                        var scale: Int // 3
-                        var renderingMode: Int // 0
-
-                        private enum CodingKeys: String, CodingKey {
-                            case file_name = "file name"
-                            case scale, renderingMode
-                        }
-                    }
-                }
-            }
-
-            struct TintColor: Codable {
-                var red: Double
-                var green: Double
-                var blue: Double
-                var alpha: Double
-            }
-        }
-
-        var complications_names: ComplicationsNames
-        struct ComplicationsNames: Codable {
-            var top: String? = "Off"
-            var bottom: String? = "Off"
-            var top_left: String?
-            var top_right: String?
-            var bottom_center: String?
+        var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
+        struct ComplicationPositionDictionary<Value: Codable>: Codable {
+            var top: Value?
+            var bottom: Value?
+            var top_left: Value?
+            var top_right: Value?
+            var bottom_center: Value?
 
             private enum CodingKeys: String, CodingKey {
                 case top, bottom
@@ -199,31 +22,170 @@ struct Watchface {
             }
         }
 
-        var complications_item_ids: ComplicationsItemIDs
-        struct ComplicationsItemIDs: Codable {
-            var top_left: Int?
-            var top_right: Int?
-            var bottom_center: Int?
+        enum ComplicationTemplate: Codable {
+            case utilitarianSmallFlat(CLKComplicationTemplateUtilitarianSmallFlat)
+            case utilitarianLargeFlat(CLKComplicationTemplateUtilitarianLargeFlat)
+            case circularSmallSimpleText(CLKComplicationTemplateCircularSmallSimpleText)
+            case circularSmallSimpleImage(CLKComplicationTemplateCircularSmallSimpleImage)
 
-            private enum CodingKeys: String, CodingKey {
-                case top_left = "top-left"
-                case top_right = "top-right"
-                case bottom_center = "bottom-center"
+            init(from decoder: Decoder) throws {
+                if let t = ((try? CLKComplicationTemplateUtilitarianSmallFlat(from: decoder))
+                                .flatMap {$0.class == "CLKComplicationTemplateUtilitarianSmallFlat" ? $0 : nil}) {
+                    self = .utilitarianSmallFlat(t)
+                    return
+                }
+                if let t = ((try? CLKComplicationTemplateUtilitarianLargeFlat(from: decoder))
+                                .flatMap {$0.class == "CLKComplicationTemplateUtilitarianLargeFlat" ? $0 : nil}) {
+                    self = .utilitarianLargeFlat(t)
+                    return
+                }
+                if let t = ((try? CLKComplicationTemplateCircularSmallSimpleText(from: decoder))
+                                .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleText" ? $0 : nil}) {
+                    self = .circularSmallSimpleText(t)
+                    return
+                }
+                if let t = ((try? CLKComplicationTemplateCircularSmallSimpleImage(from: decoder))
+                                .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleImage" ? $0 : nil}) {
+                    self = .circularSmallSimpleImage(t)
+                    return
+                }
+                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type"))
+            }
+
+            func encode(to encoder: Encoder) throws {
+                switch self {
+                case .utilitarianSmallFlat(let t): try t.encode(to: encoder)
+                case .utilitarianLargeFlat(let t): try t.encode(to: encoder)
+                case .circularSmallSimpleText(let t): try t.encode(to: encoder)
+                case .circularSmallSimpleImage(let t): try t.encode(to: encoder)
+                }
             }
         }
 
-        var complications_bundle_ids: ComplicationsBundleIDs?
-        struct ComplicationsBundleIDs: Codable {
-            var top_left: String? // com.apple.weather.watchapp
-            var top_right: String? // com.apple.HeartRate
-            var bottom_center: String? // com.apple.NanoCalendar
+        enum CLKTextProvider: Codable {
+            case date(CLKDateTextProvider)
+            case time(CLKTimeTextProvider)
+            case compound(CLKCompoundTextProvider)
+            case simple(CLKSimpleTextProvider)
 
-            private enum CodingKeys: String, CodingKey {
-                case top_left = "top-left"
-                case top_right = "top-right"
-                case bottom_center = "bottom-center"
+            init(from decoder: Decoder) throws {
+                if let p = ((try? CLKDateTextProvider(from: decoder))
+                                .flatMap {$0.class == "CLKDateTextProvider" ? $0 : nil}) {
+                    self = .date(p)
+                    return
+                }
+                if let p = ((try? CLKTimeTextProvider(from: decoder))
+                                .flatMap {$0.class == "CLKTimeTextProvider" ? $0 : nil}) {
+                    self = .time(p)
+                    return
+                }
+                if let p = ((try? CLKCompoundTextProvider(from: decoder))
+                                .flatMap {$0.class == "CLKCompoundTextProvider" ? $0 : nil}) {
+                    self = .compound(p)
+                    return
+                }
+                if let p = ((try? CLKSimpleTextProvider(from: decoder))
+                                .flatMap {$0.class == "CLKSimpleTextProvider" ? $0 : nil}) {
+                    self = .simple(p)
+                    return
+                }
+                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown CLKTextProvider type"))
+            }
+
+            func encode(to encoder: Encoder) throws {
+                switch self {
+                case .date(let p): try p.encode(to: encoder)
+                case .time(let p): try p.encode(to: encoder)
+                case .compound(let p): try p.encode(to: encoder)
+                case .simple(let p): try p.encode(to: encoder)
+                }
             }
         }
+
+        struct CLKDateTextProvider: Codable {
+            var `class`: String = "CLKDateTextProvider"
+            var date: Date = .init()
+            var _uppercase: Bool = true
+            var calendarUnits: Int = 528
+        }
+
+        struct CLKTimeTextProvider: Codable {
+            var `class`: String = "CLKTimeTextProvider"
+            var date: Date = .init()
+            var timeZone: String = "US/Pacific"
+        }
+
+        struct CLKSimpleTextProvider: Codable {
+            var `class`: String = "CLKSimpleTextProvider"
+            var text: String = "サンフランシスコ"
+        }
+
+        struct CLKCompoundTextProvider: Codable {
+            var `class`: String = "CLKCompoundTextProvider"
+            var textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())]
+            var format_segments: [String] = ["", " ", ""]
+
+            private enum CodingKeys: String, CodingKey {
+                case `class`
+                case textProviders
+                case format_segments = "format segments"
+            }
+        }
+
+        struct CLKComplicationTemplateUtilitarianSmallFlat: Codable {
+            var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
+            var version: Int = 30000
+            var creationDate: Date = .init()
+            var textProvider: CLKTextProvider = .date(.init())
+        }
+
+        struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
+            var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
+            var version: Int = 30000
+            var creationDate: Date = .init()
+            var textProvider: CLKTextProvider = .date(.init())
+        }
+
+        struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
+            var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
+            var version: Int = 30000
+            var creationDate: Date = .init()
+            var textProvider: CLKTextProvider = .date(.init())
+            var tintColor: TintColor
+        }
+
+        struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
+            var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
+            var version: Int = 30000
+            var creationDate: Date = .init()
+            var imageProvider: ImageProvider
+            var tintColor: TintColor
+
+            struct ImageProvider: Codable {
+                var onePieceImage: OnePieceImage
+                struct OnePieceImage: Codable {
+                    var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
+                    var scale: Int // 3
+                    var renderingMode: Int // 0
+
+                    private enum CodingKeys: String, CodingKey {
+                        case file_name = "file name"
+                        case scale, renderingMode
+                    }
+                }
+            }
+        }
+
+        struct TintColor: Codable {
+            var red: Double
+            var green: Double
+            var blue: Double
+            var alpha: Double
+        }
+
+        var complications_names: ComplicationPositionDictionary<String>
+        var complications_item_ids: ComplicationPositionDictionary<Int>
+        var complications_bundle_ids: ComplicationPositionDictionary<String>? // com.apple.weather.watchapp, com.apple.HeartRate, com.apple.NanoCalendar
     }
 
     var face: Face

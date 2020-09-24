@@ -249,7 +249,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     }
 }
 
-extension Watchface.Metadata.ComplicationSampleTemplate.ComplicationTemplate {
+extension Watchface.Metadata.ComplicationTemplate {
     var sampleText: String? {
         switch self {
         case .utilitarianSmallFlat(let t): return t.textProvider.sampleText
@@ -259,7 +259,7 @@ extension Watchface.Metadata.ComplicationSampleTemplate.ComplicationTemplate {
         }
     }
 }
-extension Watchface.Metadata.ComplicationSampleTemplate.CLKTextProvider {
+extension Watchface.Metadata.CLKTextProvider {
     var sampleText: String? {
         switch self {
         case .date(let p):
