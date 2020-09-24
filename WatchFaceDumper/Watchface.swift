@@ -300,7 +300,7 @@ struct Watchface {
 
                 /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
                 var localIdentifier: String
-                var modificationDate: Date = .init()
+                var modificationDate: Date? = Date()
 
                 var cropH: Double = 480
                 var cropW: Double = 384
