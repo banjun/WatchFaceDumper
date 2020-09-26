@@ -15,6 +15,8 @@ final class MetadataViewModel: NSObject, NSOutlineViewDelegate, NSOutlineViewDat
             "metadata.json": (try? PropertyListEncoder().encode(watchface.metadata))
                 .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)},
             "face.json": (try? PropertyListEncoder().encode(watchface.face))
+                .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)},
+            "complicationData/": (try? PropertyListEncoder().encode(watchface.complicationData))
                 .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)}].compactMapValues {$0}
     }
 

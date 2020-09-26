@@ -32,7 +32,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private lazy var metadataOutlineView: NSOutlineView = .init() ※ {
         $0.delegate = metadataViewModel
         $0.dataSource = metadataViewModel
-        $0.addTableColumn(.init(identifier: .init(rawValue: "Metadata")) ※ {$0.title = "metadta.json & face.json"})
+        $0.addTableColumn(.init(identifier: .init(rawValue: "Metadata")) ※ {$0.title = "metadta.json & face.json & complicationData/"})
     }
     private lazy var imageListSplitView = NSSplitView() ※ { split in
         split.delegate = self
