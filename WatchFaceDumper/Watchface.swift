@@ -7,20 +7,6 @@ struct Watchface {
         var device_size = 2 // 38mm, 42mm?
 
         var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
-        struct ComplicationPositionDictionary<Value: Codable>: Codable {
-            var top: Value?
-            var bottom: Value?
-            var top_left: Value?
-            var top_right: Value?
-            var bottom_center: Value?
-
-            private enum CodingKeys: String, CodingKey {
-                case top, bottom
-                case top_left = "top-left"
-                case top_right = "top-right"
-                case bottom_center = "bottom-center"
-            }
-        }
 
         enum ComplicationTemplate: Codable {
             case utilitarianSmallFlat(CLKComplicationTemplateUtilitarianSmallFlat)
@@ -314,11 +300,43 @@ struct Watchface {
         }
     }
 
+    typealias ComplicationData = ComplicationPositionDictionary<[String: Data]> // position -> (filename -> content)
     var complicationData: ComplicationData? = nil
-    struct ComplicationData {
-        var top_left: [String: Data]? // filename -> content
-        var top_right: [String: Data]? // filename -> content
-        var bottom_center: [String: Data]? // filename -> content
+
+    struct ComplicationPositionDictionary<Value: Codable>: Codable {
+        var top: Value?
+        var bottom: Value?
+        var top_left: Value?
+        var top_right: Value?
+        var bottom_center: Value?
+
+        enum CodingKeys: String, CodingKey, CaseIterable {
+            case top, bottom
+            case top_left = "top-left"
+            case top_right = "top-right"
+            case bottom_center = "bottom-center"
+        }
+
+        subscript(_ key: CodingKeys) -> Value? {
+            get {
+                switch key {
+                case .top: return top
+                case .bottom: return bottom
+                case .top_left: return top_left
+                case .top_right: return top_right
+                case .bottom_center: return bottom_center
+                }
+            }
+            set {
+                switch key {
+                case .top: top = newValue
+                case .bottom: bottom = newValue
+                case .top_left: top_left = newValue
+                case .top_right: top_right = newValue
+                case .bottom_center: bottom_center = newValue
+                }
+            }
+        }
     }
 }
 
@@ -353,7 +371,7 @@ extension Watchface {
         }
         let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
 
-        let complicationData = fileWrapper.fileWrappers?["complicationData"]?.fileWrappers
+        let complicationData = fileWrapper.fileWrappers?["complicationData"]
 
         self.init(
             metadata: metadata,
@@ -362,10 +380,7 @@ extension Watchface {
             no_borders_snapshot: no_borders_snapshot,
 //            device_border_snapshot: device_border_snapshot,
             resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents}), // TODO: .pathfinders for kaleidoscope
-            complicationData: complicationData.map {Watchface.ComplicationData(
-                top_left: $0["top-left"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}},
-                top_right: $0["top-right"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}},
-                bottom_center: $0["bottom-center"].flatMap {$0.fileWrappers}.map {$0.mapValues {$0.regularFileContents ?? Data()}})}
+            complicationData: complicationData.flatMap {Watchface.ComplicationData(fileWrapper: $0)}
         )
     }
 
@@ -417,6 +432,16 @@ extension Watchface {
     }
 }
 
+extension Watchface.ComplicationData {
+    init?(fileWrapper: FileWrapper) {
+        guard let positions = fileWrapper.fileWrappers else { return nil }
+        self.init()
+        CodingKeys.allCases.forEach {
+            self[$0] = positions[$0.rawValue]?.fileWrappers?.compactMapValues {$0.regularFileContents}
+        }
+    }
+}
+
 extension FileWrapper {
     convenience init(watchface: Watchface) throws {
         self.init(directoryWithFileWrappers: [
@@ -436,10 +461,12 @@ extension FileWrapper {
     }
 
     convenience init(complicationData: Watchface.ComplicationData) {
-        self.init(directoryWithFileWrappers: [
-            "top-left": complicationData.top_left.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})},
-            "top-right": complicationData.top_right.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})},
-            "bottom-center": complicationData.bottom_center.map {FileWrapper(directoryWithFileWrappers: $0.mapValues {FileWrapper(regularFileWithContents: $0)})}
-        ].compactMapValues {$0})
+        self.init(
+            directoryWithFileWrappers: Dictionary(
+                uniqueKeysWithValues: Watchface.ComplicationData.CodingKeys.allCases.map {
+                    ($0.rawValue, complicationData[$0].map {$0.mapValues {FileWrapper(regularFileWithContents: $0)}})
+                })
+                .compactMapValues {$0}
+                .mapValues {FileWrapper(directoryWithFileWrappers: $0)})
     }
 }
