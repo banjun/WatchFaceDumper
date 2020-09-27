@@ -264,7 +264,7 @@ extension Watchface.Metadata.ComplicationTemplate {
         case .graphicCornerTextImage(let t): return t.textProvider.sampleText
         case .graphicBezelCircularText(let t): return t.textProvider.sampleText
         case .graphicCircularImage: return "image"
-        case .graphicCircularOpenGaugeSimpleText(let t): return "text"
+        case .graphicCircularOpenGaugeSimpleText(let t): return "center: \(t.centerTextProvider.sampleText ?? "(null)"), bottom: \(t.bottomTextProvider.sampleText ?? "(null)")"
         }
     }
 }

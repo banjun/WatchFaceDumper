@@ -17,6 +17,7 @@
 		EA4E96F92512642D008D822B /* ImageItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4E96F82512642D008D822B /* ImageItemRowView.swift */; };
 		EA4E96FC25126454008D822B /* EditableAVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4E96FB25126454008D822B /* EditableAVPlayerView.swift */; };
 		EA4E9700251267B5008D822B /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4E96FF251267B5008D822B /* WindowController.swift */; };
+		EA52949E2520DAA400CE938E /* PhotosWatchface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52949D2520DAA400CE938E /* PhotosWatchface.swift */; };
 		EA76F8D3251B906800B395EC /* ImageListOutlineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */; };
 		EA76F8D8251B94E700B395EC /* MetadataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */; };
 		EA9D41252520BE8900838E68 /* ComplicationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41242520BE8900838E68 /* ComplicationTemplate.swift */; };
@@ -44,6 +45,7 @@
 		EA4E96F82512642D008D822B /* ImageItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageItemRowView.swift; sourceTree = "<group>"; };
 		EA4E96FB25126454008D822B /* EditableAVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableAVPlayerView.swift; sourceTree = "<group>"; };
 		EA4E96FF251267B5008D822B /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		EA52949D2520DAA400CE938E /* PhotosWatchface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosWatchface.swift; sourceTree = "<group>"; };
 		EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListOutlineViewModel.swift; sourceTree = "<group>"; };
 		EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataViewModel.swift; sourceTree = "<group>"; };
 		EA9D41242520BE8900838E68 /* ComplicationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationTemplate.swift; sourceTree = "<group>"; };
@@ -124,6 +126,14 @@
 			path = WatchFaceDumper;
 			sourceTree = "<group>";
 		};
+		EA52949C2520DA6D00CE938E /* SpecificWatchfaces */ = {
+			isa = PBXGroup;
+			children = (
+				EA52949D2520DAA400CE938E /* PhotosWatchface.swift */,
+			);
+			path = SpecificWatchfaces;
+			sourceTree = "<group>";
+		};
 		EA9D41232520BE6D00838E68 /* Watchface */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +143,7 @@
 				EA9D41372520C00800838E68 /* Resources.swift */,
 				EA9D41552520C33400838E68 /* ComplicationTemplate */,
 				EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */,
+				EA52949C2520DA6D00CE938E /* SpecificWatchfaces */,
 			);
 			path = Watchface;
 			sourceTree = "<group>";
@@ -270,6 +281,7 @@
 				EA9D41382520C00800838E68 /* Resources.swift in Sources */,
 				EA4E9700251267B5008D822B /* WindowController.swift in Sources */,
 				EA4D31BC24FFE37100104A33 /* ViewController.swift in Sources */,
+				EA52949E2520DAA400CE938E /* PhotosWatchface.swift in Sources */,
 				EA9D41352520BFD300838E68 /* Face.swift in Sources */,
 				EA9D412F2520BF5700838E68 /* GaugeProvider.swift in Sources */,
 				EA4D31BA24FFE37100104A33 /* AppDelegate.swift in Sources */,

@@ -4,11 +4,8 @@ import Ikemen
 
 class Document: NSDocument {
     var watchface: Watchface = .init(
-        metadata: .init(complication_sample_templates: .init(), complications_names: .init(), complications_item_ids: .init()),
-        face: .init(face_type: .photos, customization: .init(color: nil, content: "custom", position: nil, style: nil)),
-        snapshot: Data(),
-        no_borders_snapshot: Data(),
-        resources: .init(images: .init(imageList: []), files: [:]))
+        photosWatchface: PhotosWatchface(
+            device_size: 2, position: .top, snapshot: Data(), no_borders_snapshot: Data(), topComplication: nil, bottomComplication: nil, resources: .init(images: .init(imageList: []), files: [:])))
     private var isLossyReading = false
     private var allowLossyAutosaving = false
 
