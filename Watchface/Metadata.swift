@@ -1,28 +1,28 @@
 import Foundation
 
 extension Watchface {
-    struct Metadata: Codable {
-        var version: Int = 2
-        var device_size = 2 // 38mm, 42mm?
-        var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
-        var complications_names: ComplicationPositionDictionary<String>
-        var complications_item_ids: ComplicationPositionDictionary<Int>
-        var complications_bundle_ids: ComplicationPositionDictionary<String>? // com.apple.weather.watchapp, com.apple.HeartRate, com.apple.NanoCalendar
+    public struct Metadata: Codable {
+        public var version: Int = 2
+        public var device_size = 2 // 38mm, 42mm?
+        public var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
+        public var complications_names: ComplicationPositionDictionary<String>
+        public var complications_item_ids: ComplicationPositionDictionary<Int>
+        public var complications_bundle_ids: ComplicationPositionDictionary<String>? // com.apple.weather.watchapp, com.apple.HeartRate, com.apple.NanoCalendar
 
-        struct ComplicationPositionDictionary<Value: Codable>: Codable {
-            var top: Value?
-            var bottom: Value?
-            var top_left: Value?
-            var top_right: Value?
-            var bottom_left: Value?
-            var bottom_center: Value?
-            var bottom_right: Value?
-            var slot1: Value?
-            var slot2: Value?
-            var slot3: Value?
-            var bezel: Value?
+        public struct ComplicationPositionDictionary<Value: Codable>: Codable {
+            public var top: Value?
+            public var bottom: Value?
+            public var top_left: Value?
+            public var top_right: Value?
+            public var bottom_left: Value?
+            public var bottom_center: Value?
+            public var bottom_right: Value?
+            public var slot1: Value?
+            public var slot2: Value?
+            public var slot3: Value?
+            public var bezel: Value?
 
-            enum CodingKeys: String, CodingKey, CaseIterable {
+            public enum CodingKeys: String, CodingKey, CaseIterable {
                 case top, bottom
                 case top_left = "top-left"
                 case top_right = "top-right"
@@ -33,7 +33,7 @@ extension Watchface {
                 case bezel
             }
 
-            subscript(_ key: CodingKeys) -> Value? {
+            public subscript(_ key: CodingKeys) -> Value? {
                 get {
                     switch key {
                     case .top: return top
@@ -67,11 +67,11 @@ extension Watchface {
             }
         }
 
-        struct Color: Codable {
-            var red: Double
-            var green: Double
-            var blue: Double
-            var alpha: Double
+        public struct Color: Codable {
+            public var red: Double
+            public var green: Double
+            public var blue: Double
+            public var alpha: Double
         }
     }
 }

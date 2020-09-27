@@ -1,13 +1,13 @@
 import Foundation
 
 extension Watchface.Metadata {
-    enum CLKTextProvider: Codable {
+    public enum CLKTextProvider: Codable {
         case date(CLKDateTextProvider)
         case time(CLKTimeTextProvider)
         case compound(CLKCompoundTextProvider)
         case simple(CLKSimpleTextProvider)
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let anyProvider = try CLKTextProviderAny(from: decoder)
             switch anyProvider.class {
             case "CLKDateTextProvider": self = .date(try .init(from: decoder))
@@ -19,7 +19,7 @@ extension Watchface.Metadata {
             }
         }
 
-        func encode(to encoder: Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             switch self {
             case .date(let p): try p.encode(to: encoder)
             case .time(let p): try p.encode(to: encoder)
@@ -33,29 +33,29 @@ extension Watchface.Metadata {
         }
     }
 
-    struct CLKDateTextProvider: Codable {
-        var `class`: String = "CLKDateTextProvider"
-        var date: Date = .init()
-        var _uppercase: Bool = true
-        var calendarUnits: Int = 528
+    public struct CLKDateTextProvider: Codable {
+        public var `class`: String = "CLKDateTextProvider"
+        public var date: Date = .init()
+        public var _uppercase: Bool = true
+        public var calendarUnits: Int = 528
     }
 
-    struct CLKTimeTextProvider: Codable {
-        var `class`: String = "CLKTimeTextProvider"
-        var date: Date = .init()
-        var timeZone: String = "US/Pacific"
+    public struct CLKTimeTextProvider: Codable {
+        public var `class`: String = "CLKTimeTextProvider"
+        public var date: Date = .init()
+        public var timeZone: String = "US/Pacific"
     }
 
-    struct CLKSimpleTextProvider: Codable {
-        var `class`: String = "CLKSimpleTextProvider"
-        var text: String = "サンフランシスコ"
-        var tintColor: Color?
+    public struct CLKSimpleTextProvider: Codable {
+        public var `class`: String = "CLKSimpleTextProvider"
+        public var text: String = "サンフランシスコ"
+        public var tintColor: Color?
     }
 
-    struct CLKCompoundTextProvider: Codable {
-        var `class`: String = "CLKCompoundTextProvider"
-        var textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())]
-        var format_segments: [String] = ["", " ", ""]
+    public struct CLKCompoundTextProvider: Codable {
+        public var `class`: String = "CLKCompoundTextProvider"
+        public var textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())]
+        public var format_segments: [String] = ["", " ", ""]
 
         private enum CodingKeys: String, CodingKey {
             case `class`

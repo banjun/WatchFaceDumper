@@ -1,12 +1,12 @@
 import Foundation
 
-struct Watchface {
-    var metadata: Metadata
-    var face: Face
-    var snapshot: Data
-    var no_borders_snapshot: Data
+public struct Watchface {
+    public var metadata: Metadata
+    public var face: Face
+    public var snapshot: Data
+    public var no_borders_snapshot: Data
 //    var device_border_snapshot: Data?
-    var resources: Resources?
-    typealias ComplicationData = Metadata.ComplicationPositionDictionary<[String: Data]> // position -> (filename -> content)
-    var complicationData: ComplicationData? = nil
+    public var resources: Resources?
+    public typealias ComplicationData = Metadata.ComplicationPositionDictionary<[String: Data]> // position -> (filename -> content)
+    public var complicationData: ComplicationData? = nil
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 extension Watchface.Metadata {
-    enum ComplicationTemplate: Codable {
+    public enum ComplicationTemplate: Codable {
         case utilitarianSmallFlat(CLKComplicationTemplateUtilitarianSmallFlat)
         case utilitarianLargeFlat(CLKComplicationTemplateUtilitarianLargeFlat)
         case circularSmallSimpleText(CLKComplicationTemplateCircularSmallSimpleText)
@@ -12,7 +12,7 @@ extension Watchface.Metadata {
         case graphicCircularImage(CLKComplicationTemplateGraphicCircularImage)
         case graphicCircularOpenGaugeSimpleText(CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText)
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let anyTemplate = try CLKComplicationTemplateAny(from: decoder)
             switch anyTemplate.class {
             case "CLKComplicationTemplateUtilitarianSmallFlat": self = .utilitarianSmallFlat(try .init(from: decoder))
@@ -29,7 +29,7 @@ extension Watchface.Metadata {
             }
         }
 
-        func encode(to encoder: Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             switch self {
             case .utilitarianSmallFlat(let t): try t.encode(to: encoder)
             case .utilitarianLargeFlat(let t): try t.encode(to: encoder)
@@ -48,84 +48,84 @@ extension Watchface.Metadata {
         }
     }
 
-    struct CLKComplicationTemplateUtilitarianSmallFlat: Codable {
-        var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var textProvider: CLKTextProvider = .date(.init())
+    public struct CLKComplicationTemplateUtilitarianSmallFlat: Codable {
+        public var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var textProvider: CLKTextProvider = .date(.init())
     }
 
-    struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
-        var `class`: String = "CLKComplicationTemplateUtilitarianLargeFlat"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var textProvider: CLKTextProvider = .date(.init())
-        var imageProvider: ImageProvider?
+    public struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
+        public var `class`: String = "CLKComplicationTemplateUtilitarianLargeFlat"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var textProvider: CLKTextProvider = .date(.init())
+        public var imageProvider: ImageProvider?
     }
 
-    struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
-        var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var textProvider: CLKTextProvider = .date(.init())
-        var tintColor: Color
+    public struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
+        public var `class`: String = "CLKComplicationTemplateCircularSmallSimpleText"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var textProvider: CLKTextProvider = .date(.init())
+        public var tintColor: Color
     }
 
-    struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
-        var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var imageProvider: ImageProvider
-        var tintColor: Color
+    public struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
+        public var `class`: String = "CLKComplicationTemplateCircularSmallSimpleImage"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var imageProvider: ImageProvider
+        public var tintColor: Color
     }
 
-    struct CLKComplicationTemplateGraphicCornerGaugeText: Codable {
-        var `class`: String = "CLKComplicationTemplateGraphicCornerGaugeText"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var leadingTextProvider: CLKTextProvider
-        var outerTextProvider: CLKTextProvider
-        var gaugeProvider: CLKSimpleGaugeProvider
+    public struct CLKComplicationTemplateGraphicCornerGaugeText: Codable {
+        public var `class`: String = "CLKComplicationTemplateGraphicCornerGaugeText"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var leadingTextProvider: CLKTextProvider
+        public var outerTextProvider: CLKTextProvider
+        public var gaugeProvider: CLKSimpleGaugeProvider
     }
 
-    struct CLKComplicationTemplateGraphicCornerTextImage: Codable {
-        var `class`: String = "CLKComplicationTemplateGraphicCornerTextImage"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var textProvider: CLKTextProvider
-        var imageProvider: ImageProvider
-        var tintColor: Color?
+    public struct CLKComplicationTemplateGraphicCornerTextImage: Codable {
+        public var `class`: String = "CLKComplicationTemplateGraphicCornerTextImage"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var textProvider: CLKTextProvider
+        public var imageProvider: ImageProvider
+        public var tintColor: Color?
     }
 
-    struct CLKComplicationTemplateGraphicBezelCircularText: Codable {
-        var `class`: String = "CLKComplicationTemplateGraphicBezelCircularText"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var textProvider: CLKTextProvider
-        var BezelCircularClassName: String = "CLKComplicationTemplateGraphicCircularMetadata"
-        var circularTemplate: CircularTemplate
-        struct CircularTemplate: Codable {
-            var `class`: String = "CLKComplicationTemplateGraphicCircularMetadata"
-            var version: Int = 30000
-            var metadata: Metadata
-            var creationDate: Double = Date().timeIntervalSince1970
-            struct Metadata: Codable {}
+    public struct CLKComplicationTemplateGraphicBezelCircularText: Codable {
+        public var `class`: String = "CLKComplicationTemplateGraphicBezelCircularText"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var textProvider: CLKTextProvider
+        public var BezelCircularClassName: String = "CLKComplicationTemplateGraphicCircularMetadata"
+        public var circularTemplate: CircularTemplate
+        public struct CircularTemplate: Codable {
+            public var `class`: String = "CLKComplicationTemplateGraphicCircularMetadata"
+            public var version: Int = 30000
+            public var metadata: Metadata
+            public var creationDate: Double = Date().timeIntervalSince1970
+            public struct Metadata: Codable {}
         }
     }
 
-    struct CLKComplicationTemplateGraphicCircularImage: Codable {
-        var `class`: String = "CLKComplicationTemplateGraphicCircularImage"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var imageProvider: ImageProvider
+    public struct CLKComplicationTemplateGraphicCircularImage: Codable {
+        public var `class`: String = "CLKComplicationTemplateGraphicCircularImage"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var imageProvider: ImageProvider
     }
 
-    struct CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText: Codable {
-        var `class`: String = "CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText"
-        var version: Int = 30000
-        var creationDate: Double = Date().timeIntervalSince1970
-        var centerTextProvider: CLKTextProvider
-        var bottomTextProvider: CLKTextProvider
-        var gaugeProvider: CLKSimpleGaugeProvider
+    public struct CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText: Codable {
+        public var `class`: String = "CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText"
+        public var version: Int = 30000
+        public var creationDate: Double = Date().timeIntervalSince1970
+        public var centerTextProvider: CLKTextProvider
+        public var bottomTextProvider: CLKTextProvider
+        public var gaugeProvider: CLKSimpleGaugeProvider
     }
 }

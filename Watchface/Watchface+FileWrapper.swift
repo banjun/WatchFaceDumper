@@ -1,6 +1,6 @@
 import Foundation
 
-extension Watchface {
+public extension Watchface {
     init(fileWrapper: FileWrapper) throws {
         guard let metadata_json = fileWrapper.fileWrappers?["metadata.json"]?.regularFileContents else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "metadata.json not found"))
@@ -113,7 +113,7 @@ extension Watchface {
     }
 }
 
-extension Watchface.ComplicationData {
+public extension Watchface.ComplicationData {
     init?(fileWrapper: FileWrapper) {
         guard let positions = fileWrapper.fileWrappers else { return nil }
         self.init()
@@ -123,7 +123,7 @@ extension Watchface.ComplicationData {
     }
 }
 
-extension FileWrapper {
+public extension FileWrapper {
     convenience init(watchface: Watchface) throws {
         self.init(directoryWithFileWrappers: [
             "face.json": FileWrapper(regularFileWithContents: try JSONEncoder().encode(watchface.face)),
