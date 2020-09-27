@@ -90,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				EA4D31B824FFE37100104A33 /* WatchFaceDumper */,
+				EA9D41232520BE6D00838E68 /* Watchface */,
 				EA4D31B724FFE37100104A33 /* Products */,
 				8E45C27CF3A17723C9BB6E7E /* Pods */,
 				970F6C4464A3AF606413EFCC /* Frameworks */,
@@ -115,7 +116,6 @@
 				EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */,
 				EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */,
 				EA4D31BD24FFE37100104A33 /* Document.swift */,
-				EA9D41232520BE6D00838E68 /* Watchface */,
 				EA4D31BF24FFE37200104A33 /* Assets.xcassets */,
 				EA4D31C124FFE37200104A33 /* Main.storyboard */,
 				EA4D31C424FFE37200104A33 /* Info.plist */,
