@@ -1,0 +1,14 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  podspec:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: bundle install
+    - run: bundle exec pod lib lint
