@@ -13,32 +13,27 @@ struct Watchface {
             case utilitarianLargeFlat(CLKComplicationTemplateUtilitarianLargeFlat)
             case circularSmallSimpleText(CLKComplicationTemplateCircularSmallSimpleText)
             case circularSmallSimpleImage(CLKComplicationTemplateCircularSmallSimpleImage)
+            case graphicCornerGaugeText(CLKComplicationTemplateGraphicCornerGaugeText)
+            case graphicCornerTextImage(CLKComplicationTemplateGraphicCornerTextImage)
+            case graphicBezelCircularText(CLKComplicationTemplateGraphicBezelCircularText)
+            case graphicCircularImage(CLKComplicationTemplateGraphicCircularImage)
+            case graphicCircularOpenGaugeSimpleText(CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText)
 
             init(from decoder: Decoder) throws {
-                if let t = ((try? CLKComplicationTemplateUtilitarianSmallFlat(from: decoder))
-                                .flatMap {$0.class == "CLKComplicationTemplateUtilitarianSmallFlat" ? $0 : nil}) {
-                    self = .utilitarianSmallFlat(t)
-                    return
+                let anyTemplate = try CLKComplicationTemplateAny(from: decoder)
+                switch anyTemplate.class {
+                case "CLKComplicationTemplateUtilitarianSmallFlat": self = .utilitarianSmallFlat(try .init(from: decoder))
+                case "CLKComplicationTemplateUtilitarianLargeFlat": self = .utilitarianLargeFlat(try .init(from: decoder))
+                case "CLKComplicationTemplateCircularSmallSimpleText": self = .circularSmallSimpleText(try .init(from: decoder))
+                case "CLKComplicationTemplateCircularSmallSimpleImage": self = .circularSmallSimpleImage(try .init(from: decoder))
+                case "CLKComplicationTemplateGraphicCornerGaugeText": self = .graphicCornerGaugeText(try .init(from: decoder))
+                case "CLKComplicationTemplateGraphicCornerTextImage": self = .graphicCornerTextImage(try .init(from: decoder))
+                case "CLKComplicationTemplateGraphicBezelCircularText": self = .graphicBezelCircularText(try .init(from: decoder))
+                case "CLKComplicationTemplateGraphicCircularImage": self = .graphicCircularImage(try .init(from: decoder))
+                case "CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText": self = .graphicCircularOpenGaugeSimpleText(try .init(from: decoder))
+                default:
+                    throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type: \(anyTemplate.class)"))
                 }
-                if let t = ((try? CLKComplicationTemplateUtilitarianLargeFlat(from: decoder))
-                                .flatMap {$0.class == "CLKComplicationTemplateUtilitarianLargeFlat" ? $0 : nil}) {
-                    self = .utilitarianLargeFlat(t)
-                    return
-                }
-                if let t = ((try? CLKComplicationTemplateCircularSmallSimpleText(from: decoder))
-                                .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleText" ? $0 : nil}) {
-                    self = .circularSmallSimpleText(t)
-                    return
-                }
-                if let t = ((try? CLKComplicationTemplateCircularSmallSimpleImage(from: decoder))
-                                .flatMap {$0.class == "CLKComplicationTemplateCircularSmallSimpleImage" ? $0 : nil}) {
-                    self = .circularSmallSimpleImage(t)
-                    return
-                }
-
-
-                let anyTemplate = try? CLKComplicationTemplateAny(from: decoder)
-                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown ComplicationTemplate type: \(anyTemplate?.class ?? "(unknown structure)")"))
             }
 
             func encode(to encoder: Encoder) throws {
@@ -47,6 +42,11 @@ struct Watchface {
                 case .utilitarianLargeFlat(let t): try t.encode(to: encoder)
                 case .circularSmallSimpleText(let t): try t.encode(to: encoder)
                 case .circularSmallSimpleImage(let t): try t.encode(to: encoder)
+                case .graphicCornerGaugeText(let t): try t.encode(to: encoder)
+                case .graphicCornerTextImage(let t): try t.encode(to: encoder)
+                case .graphicBezelCircularText(let t): try t.encode(to: encoder)
+                case .graphicCircularImage(let t): try t.encode(to: encoder)
+                case .graphicCircularOpenGaugeSimpleText(let t): try t.encode(to: encoder)
                 }
             }
 
@@ -111,6 +111,7 @@ struct Watchface {
         struct CLKSimpleTextProvider: Codable {
             var `class`: String = "CLKSimpleTextProvider"
             var text: String = "サンフランシスコ"
+            var tintColor: Color?
         }
 
         struct CLKCompoundTextProvider: Codable {
@@ -145,7 +146,7 @@ struct Watchface {
             var version: Int = 30000
             var creationDate: Double = Date().timeIntervalSince1970
             var textProvider: CLKTextProvider = .date(.init())
-            var tintColor: TintColor
+            var tintColor: Color
         }
 
         struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
@@ -153,13 +154,68 @@ struct Watchface {
             var version: Int = 30000
             var creationDate: Double = Date().timeIntervalSince1970
             var imageProvider: ImageProvider
-            var tintColor: TintColor
+            var tintColor: Color
+        }
+
+        struct CLKComplicationTemplateGraphicCornerGaugeText: Codable {
+            var `class`: String = "CLKComplicationTemplateGraphicCornerGaugeText"
+            var version: Int = 30000
+            var creationDate: Double = Date().timeIntervalSince1970
+            var leadingTextProvider: CLKTextProvider
+            var outerTextProvider: CLKTextProvider
+            var gaugeProvider: CLKSimpleGaugeProvider
+        }
+
+        struct CLKComplicationTemplateGraphicCornerTextImage: Codable {
+            var `class`: String = "CLKComplicationTemplateGraphicCornerTextImage"
+            var version: Int = 30000
+            var creationDate: Double = Date().timeIntervalSince1970
+            var textProvider: CLKTextProvider
+            var imageProvider: ImageProvider
+            var tintColor: Color?
+        }
+
+        struct CLKComplicationTemplateGraphicBezelCircularText: Codable {
+            var `class`: String = "CLKComplicationTemplateGraphicBezelCircularText"
+            var version: Int = 30000
+            var creationDate: Double = Date().timeIntervalSince1970
+            var textProvider: CLKTextProvider
+            var BezelCircularClassName: String = "CLKComplicationTemplateGraphicCircularMetadata"
+            var circularTemplate: CircularTemplate
+            struct CircularTemplate: Codable {
+                var `class`: String = "CLKComplicationTemplateGraphicCircularMetadata"
+                var version: Int = 30000
+                var metadata: Metadata
+                var creationDate: Double = Date().timeIntervalSince1970
+                struct Metadata: Codable {}
+            }
+        }
+
+        struct CLKComplicationTemplateGraphicCircularImage: Codable {
+            var `class`: String = "CLKComplicationTemplateGraphicCircularImage"
+            var version: Int = 30000
+            var creationDate: Double = Date().timeIntervalSince1970
+            var imageProvider: ImageProvider
+        }
+
+        struct CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText: Codable {
+            var `class`: String = "CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText"
+            var version: Int = 30000
+            var creationDate: Double = Date().timeIntervalSince1970
+            var centerTextProvider: CLKTextProvider
+            var bottomTextProvider: CLKTextProvider
+            var gaugeProvider: CLKSimpleGaugeProvider
         }
 
         struct ImageProvider: Codable {
-            var onePieceImage: Item
+            var onePieceImage: Item?
             var twoPieceImageBackground: Item?
             var twoPieceImageForeground: Item?
+            var fullColorImage: Item?
+            var tintedImageProvider: ChildImageProvider?
+            var monochromeFilterType: Int? // 0
+            var applyScalingAndCircularMask: Bool? // true
+            var prefersFilterOverTransition: Bool? // false
 
             struct Item: Codable {
                 var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
@@ -171,9 +227,21 @@ struct Watchface {
                     case scale, renderingMode
                 }
             }
+
+            struct ChildImageProvider: Codable {
+                var onePieceImage: Item?
+            }
         }
 
-        struct TintColor: Codable {
+        struct CLKSimpleGaugeProvider: Codable {
+            var `class`: String = "CLKSimpleGaugeProvider"
+            var gaugeFillFraction: Double // 0.581818163394928
+            var gaugeStyle: Int // 0
+            var gaugeColors: [Color]
+            var gaugeColorLocations: [Double]?
+        }
+
+        struct Color: Codable {
             var red: Double
             var green: Double
             var blue: Double
@@ -193,13 +261,14 @@ struct Watchface {
         enum FaceType: String, Codable {
             case photos // has [top, bottom]
             case kaleidoscope // has [top-left, top-right, bottom-center]
+            case whistler_analog = "whistler-analog" // aka infograph
         }
-        var resource_directory: Bool = true
+        var resource_directory: Bool? = true // infograph: nil
 
         var customization: Customization
         struct Customization: Codable {
             var color: String? // photo: "none"
-            var content: String // photo: "custom", kaleidoscope: "asset custom"
+            var content: String? // photo: "custom", kaleidoscope: "asset custom", infograph: nil
             var position: String? // "top"
             var style: String? // kaleidoscope: "radial"
         }
@@ -210,13 +279,25 @@ struct Watchface {
             var bottom: Item?
             var top_left: Item?
             var top_right: Item?
+            var bottom_left: Item?
             var bottom_center: Item?
+            var bottom_right: Item?
+            var slot_1: Item?
+            var slot_2: Item?
+            var slot_3: Item?
+            var bezel: Item?
 
             private enum CodingKeys: String, CodingKey {
                 case top, bottom
                 case top_left = "top left"
                 case top_right = "top right"
+                case bottom_left = "bottom left"
                 case bottom_center = "bottom center"
+                case bottom_right = "bottom right"
+                case slot_1 = "slot 1"
+                case slot_2 = "slot 2"
+                case slot_3 = "slot 3"
+                case bezel
             }
 
             struct Item: Codable {
@@ -233,7 +314,7 @@ struct Watchface {
                     var displayName: String
                     var supportedFamilies: [Int] // [0, 1, ..., 12]
                     var identifier: String // UUID
-                    var userActivity: String // Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
+                    var userActivity: String? // Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
                 }
             }
         }
@@ -251,7 +332,7 @@ struct Watchface {
     var no_borders_snapshot: Data
 //    var device_border_snapshot: Data?
 
-    var resources: Resources
+    var resources: Resources?
     struct Resources {
         var images: Metadata
         var files: [String: Data] // filename -> content
@@ -312,13 +393,23 @@ struct Watchface {
         var bottom: Value?
         var top_left: Value?
         var top_right: Value?
+        var bottom_left: Value?
         var bottom_center: Value?
+        var bottom_right: Value?
+        var slot1: Value?
+        var slot2: Value?
+        var slot3: Value?
+        var bezel: Value?
 
         enum CodingKeys: String, CodingKey, CaseIterable {
             case top, bottom
             case top_left = "top-left"
             case top_right = "top-right"
+            case bottom_left = "bottom-left"
             case bottom_center = "bottom-center"
+            case bottom_right = "bottom-right"
+            case slot1, slot2, slot3
+            case bezel
         }
 
         subscript(_ key: CodingKeys) -> Value? {
@@ -328,7 +419,13 @@ struct Watchface {
                 case .bottom: return bottom
                 case .top_left: return top_left
                 case .top_right: return top_right
+                case .bottom_left: return bottom_left
                 case .bottom_center: return bottom_center
+                case .bottom_right: return bottom_right
+                case .slot1: return slot1
+                case .slot2: return slot2
+                case .slot3: return slot3
+                case .bezel: return bezel
                 }
             }
             set {
@@ -337,7 +434,13 @@ struct Watchface {
                 case .bottom: bottom = newValue
                 case .top_left: top_left = newValue
                 case .top_right: top_right = newValue
+                case .bottom_left: bottom_left = newValue
                 case .bottom_center: bottom_center = newValue
+                case .bottom_right: bottom_right = newValue
+                case .slot1: slot1 = newValue
+                case .slot2: slot2 = newValue
+                case .slot3: slot3 = newValue
+                case .bezel: bezel = newValue
                 }
             }
         }
@@ -366,14 +469,20 @@ extension Watchface {
 
 //        let device_border_snapshot = fileWrapper.fileWrappers?["device_border_snapshot.png"]?.regularFileContents
 
-        guard let resources = fileWrapper.fileWrappers?["Resources"]?.fileWrappers else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Resources/ not found"))
-        }
+        let resources: Watchface.Resources?
+        if face.resource_directory == true {
+            guard let resourcesDirectory = fileWrapper.fileWrappers?["Resources"]?.fileWrappers else {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Resources/ not found"))
+            }
 
-        guard let resources_metadata_plist = resources["Images.plist"]?.regularFileContents else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Images.plist not found"))
+            guard let resources_metadata_plist = resourcesDirectory["Images.plist"]?.regularFileContents else {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Images.plist not found"))
+            }
+            let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
+            resources = Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resourcesDirectory[$1]?.regularFileContents}) // TODO: .pathfinders for kaleidoscope
+        } else {
+            resources = nil
         }
-        let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
 
         let complicationData = fileWrapper.fileWrappers?["complicationData"]
 
@@ -383,7 +492,7 @@ extension Watchface {
             snapshot: snapshot,
             no_borders_snapshot: no_borders_snapshot,
 //            device_border_snapshot: device_border_snapshot,
-            resources: Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resources[$1]?.regularFileContents}), // TODO: .pathfinders for kaleidoscope
+            resources: resources,
             complicationData: complicationData.flatMap {Watchface.ComplicationData(fileWrapper: $0)}
         )
     }
@@ -410,7 +519,8 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):\n\(diff(between: l, and: r))")
+                NSLog("%@", "detect differences in \(filename):")
+                print("\(diff(between: l, and: r))")
             }
             return l == r
         }
@@ -418,7 +528,8 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):\n\(diff(between: l, and: r))")
+                NSLog("%@", "detect differences in \(filename):")
+                print("\(diff(between: l, and: r))")
             }
             return l == r
         }
@@ -441,7 +552,7 @@ extension Watchface {
               let rightResources = right.fileWrappers?["Resources"] else { return false }
         guard leftResources.fileWrappers?.count == rightResources.fileWrappers?.count else { return false }
         guard isEqualPropertyListFiles(left: leftResources, right: rightResources, filename: "Images.plist") else { return false }
-        for (filename, _) in resources.files {
+        for (filename, _) in resources?.files ?? [:] {
             guard isEqualDataFiles(left: leftResources, right: rightResources, filename: filename) else { return false }
         }
 
@@ -467,7 +578,7 @@ extension FileWrapper {
             "snapshot.png": FileWrapper(regularFileWithContents: watchface.snapshot),
             "no_borders_snapshot.png": FileWrapper(regularFileWithContents: watchface.no_borders_snapshot),
             //            "device_border_snapshot.png": watchface.device_border_snapshot.map {FileWrapper(regularFileWithContents: $0)},
-            "Resources": try FileWrapper(resources: watchface.resources),
+            "Resources": try watchface.resources.map {try FileWrapper(resources: $0)},
             "complicationData": watchface.complicationData.map {FileWrapper(complicationData: $0)},
         ].compactMapValues {$0})
     }

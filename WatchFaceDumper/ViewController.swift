@@ -142,10 +142,11 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
         metadataViewModel.setWatchface(watchface)
 
-        let resources = watchface.resources
-        imageItems = resources.images.imageList
-            .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
-            .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
+        imageItems = watchface.resources.map { resources in
+            resources.images.imageList
+                .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
+                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
+        } ?? []
 
         imageListOutlineViewModel.setWatchface(watchface)
 
@@ -165,29 +166,29 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             $0.imageDidChange = { [weak self] image in
                 guard let self = self else { return }
                 self.document.watchface = self.document.watchface ※ { watchface in
-                    let imageURL = watchface.resources.images.imageList[row].imageURL
+                    guard let imageURL = watchface.resources?.images.imageList[row].imageURL else { return }
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
-                    watchface.resources.files[imageURL] = jpeg
+                    watchface.resources?.files[imageURL] = jpeg
                     // TODO: resize
-                    watchface.resources.images.imageList[row].cropX = 0
-                    watchface.resources.images.imageList[row].cropY = 0
-                    watchface.resources.images.imageList[row].cropW = Double(image?.size.width ?? 0)
-                    watchface.resources.images.imageList[row].cropH = Double(image?.size.height ?? 0)
-                    watchface.resources.images.imageList[row].originalCropX = 0
-                    watchface.resources.images.imageList[row].originalCropY = 0
-                    watchface.resources.images.imageList[row].originalCropW = Double(image?.size.width ?? 0)
-                    watchface.resources.images.imageList[row].originalCropH = Double(image?.size.height ?? 0)
+                    watchface.resources?.images.imageList[row].cropX = 0
+                    watchface.resources?.images.imageList[row].cropY = 0
+                    watchface.resources?.images.imageList[row].cropW = Double(image?.size.width ?? 0)
+                    watchface.resources?.images.imageList[row].cropH = Double(image?.size.height ?? 0)
+                    watchface.resources?.images.imageList[row].originalCropX = 0
+                    watchface.resources?.images.imageList[row].originalCropY = 0
+                    watchface.resources?.images.imageList[row].originalCropW = Double(image?.size.width ?? 0)
+                    watchface.resources?.images.imageList[row].originalCropH = Double(image?.size.height ?? 0)
                 }
                 self.reloadDocument()
             }
             $0.movieDidChange = { [weak self] movie in
                 guard let self = self else { return }
                 self.document.watchface = self.document.watchface ※ { watchface in
-                    let irisVideoURL = watchface.resources.images.imageList[row].irisVideoURL
-                    watchface.resources.files[irisVideoURL] = movie
-                    watchface.resources.images.imageList[row].isIris = movie != nil
-                    watchface.resources.images.imageList[row].irisDuration = 2.3
-                    watchface.resources.images.imageList[row].irisStillDisplayTime = 1.4
+                    guard let irisVideoURL = watchface.resources?.images.imageList[row].irisVideoURL else { return }
+                    watchface.resources?.files[irisVideoURL] = movie
+                    watchface.resources?.images.imageList[row].isIris = movie != nil
+                    watchface.resources?.images.imageList[row].irisDuration = 2.3
+                    watchface.resources?.images.imageList[row].irisStillDisplayTime = 1.4
                     // TODO: re-compress: should be less than 3 secs?
                     // TODO: update duration metadata
 
@@ -233,9 +234,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 originalCropW: 0,
                 originalCropX: 0,
                 originalCropY: 0)
-            watchface.resources.images.imageList.append(item)
-            watchface.resources.files[item.imageURL] = imageData
-            watchface.resources.files[item.irisVideoURL] = movieData
+            watchface.resources?.images.imageList.append(item)
+            watchface.resources?.files[item.imageURL] = imageData
+            watchface.resources?.files[item.irisVideoURL] = movieData
         }
         reloadDocument()
     }
@@ -243,9 +244,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     @IBAction func removeImage(_ sender: Any?) {
         guard case 0..<imageItems.count = imageListTableView.selectedRow else { return }
         document.watchface = document.watchface ※ { watchface in
-            let removed = watchface.resources.images.imageList.remove(at: imageListTableView.selectedRow)
+            guard let removed = watchface.resources?.images.imageList.remove(at: imageListTableView.selectedRow) else { return }
             [removed.imageURL, removed.irisVideoURL].forEach {
-                watchface.resources.files.removeValue(forKey: $0)
+                watchface.resources?.files.removeValue(forKey: $0)
             }
         }
         reloadDocument()
@@ -259,6 +260,11 @@ extension Watchface.Metadata.ComplicationTemplate {
         case .utilitarianLargeFlat(let t): return t.textProvider.sampleText
         case .circularSmallSimpleText(let t): return t.textProvider.sampleText
         case .circularSmallSimpleImage: return "image"
+        case .graphicCornerGaugeText: return "gauge"
+        case .graphicCornerTextImage(let t): return t.textProvider.sampleText
+        case .graphicBezelCircularText(let t): return t.textProvider.sampleText
+        case .graphicCircularImage: return "image"
+        case .graphicCircularOpenGaugeSimpleText(let t): return "text"
         }
     }
 }

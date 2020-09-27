@@ -11,7 +11,7 @@ final class ImageListOutlineViewModel: NSObject, NSOutlineViewDelegate, NSOutlin
     }
 
     func setWatchface(_ watchface: Watchface) {
-        imageListPropertyList = (try? PropertyListEncoder().encode(watchface.resources.images.imageList))
+        imageListPropertyList = (try? PropertyListEncoder().encode(watchface.resources?.images.imageList))
             .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)} as? [Any]
     }
 
