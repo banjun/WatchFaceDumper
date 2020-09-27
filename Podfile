@@ -5,4 +5,5 @@ target 'WatchFaceDumper' do
   pod 'ZIPFoundation'
   pod 'NorthLayout'
   pod '※ikemen'
+  pod 'MirrorDiffKit'
 end

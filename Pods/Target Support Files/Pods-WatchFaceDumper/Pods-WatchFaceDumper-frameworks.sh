@@ -198,12 +198,14 @@ fi
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/FootlessParser/FootlessParser.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/MirrorDiffKit/MirrorDiffKit.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/NorthLayout/NorthLayout.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/※ikemen/Ikemen.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/FootlessParser/FootlessParser.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/MirrorDiffKit/MirrorDiffKit.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/NorthLayout/NorthLayout.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/※ikemen/Ikemen.framework"

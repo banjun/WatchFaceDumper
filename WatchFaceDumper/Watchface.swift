@@ -1,4 +1,5 @@
 import Foundation
+import MirrorDiffKit
 
 struct Watchface {
     var metadata: Metadata
@@ -133,10 +134,11 @@ struct Watchface {
         }
 
         struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
-            var `class`: String = "CLKComplicationTemplateUtilitarianSmallFlat"
+            var `class`: String = "CLKComplicationTemplateUtilitarianLargeFlat"
             var version: Int = 30000
             var creationDate: Double = Date().timeIntervalSince1970
             var textProvider: CLKTextProvider = .date(.init())
+            var imageProvider: ImageProvider?
         }
 
         struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
@@ -153,18 +155,21 @@ struct Watchface {
             var creationDate: Double = Date().timeIntervalSince1970
             var imageProvider: ImageProvider
             var tintColor: TintColor
+        }
 
-            struct ImageProvider: Codable {
-                var onePieceImage: OnePieceImage
-                struct OnePieceImage: Codable {
-                    var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
-                    var scale: Int // 3
-                    var renderingMode: Int // 0
+        struct ImageProvider: Codable {
+            var onePieceImage: Item
+            var twoPieceImageBackground: Item?
+            var twoPieceImageForeground: Item?
 
-                    private enum CodingKeys: String, CodingKey {
-                        case file_name = "file name"
-                        case scale, renderingMode
-                    }
+            struct Item: Codable {
+                var file_name: String // "13CF2F31-40CD-4F66-8C55-72A03A46DDC3.png" where .watchface/complicationData/top-right/
+                var scale: Int // 3
+                var renderingMode: Int // 0
+
+                private enum CodingKeys: String, CodingKey {
+                    case file_name = "file name"
+                    case scale, renderingMode
                 }
             }
         }
@@ -393,7 +398,8 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+                NSLog("%@", "detect differences in \(filename):")
+                print(diff(between: l.debugDescription, and: r.debugDescription))
             }
             return l == r
         }
@@ -401,7 +407,8 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+                NSLog("%@", "detect differences in \(filename):")
+                print(diff(between: l.debugDescription, and: r.debugDescription))
             }
             return l == r
         }
@@ -409,7 +416,8 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents
             let r = right.fileWrappers?[filename]?.regularFileContents
             if l != r {
-                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\n\nright:\(r.debugDescription)")
+                NSLog("%@", "detect differences in \(filename):")
+                print(diff(between: l.debugDescription, and: r.debugDescription))
             }
             return l == r
         }
