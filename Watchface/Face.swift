@@ -35,6 +35,13 @@ extension Watchface {
             public var position: String?
             /// kaleidoscope: "radial"
             public var style: String?
+
+            public init(color: String? = nil, content: String? = nil, position: String? = nil, style: String? = nil) {
+                self.color = color
+                self.content = content
+                self.position = position
+                self.style = style
+            }
         }
 
         public struct Complications: Codable {
@@ -83,8 +90,43 @@ extension Watchface {
                     public var identifier: String
                     /// Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
                     public var userActivity: String?
+
+                    public init(displayName: String, supportedFamilies: [Int], identifier: String, userActivity: String? = nil) {
+                        self.displayName = displayName
+                        self.supportedFamilies = supportedFamilies
+                        self.identifier = identifier
+                        self.userActivity = userActivity
+                    }
+                }
+
+                public init(app: String, `extension`: String? = nil, complication_descriptor: ComplicationDescriptor? = nil) {
+                    self.app = app
+                    self.extension = `extension`
+                    self.complication_descriptor = complication_descriptor
                 }
             }
+
+            public init(top: Item? = nil, bottom: Item? = nil, top_left: Item? = nil, top_right: Item? = nil, bottom_left: Item? = nil, bottom_center: Item? = nil, bottom_right: Item? = nil, slot_1: Item? = nil, slot_2: Item? = nil, slot_3: Item? = nil, bezel: Item? = nil) {
+                self.top = top
+                self.bottom = bottom
+                self.top_left = top_left
+                self.top_right = top_right
+                self.bottom_left = bottom_left
+                self.bottom_center = bottom_center
+                self.bottom_right = bottom_right
+                self.slot_1 = slot_1
+                self.slot_2 = slot_2
+                self.slot_3 = slot_3
+                self.bezel = bezel
+            }
+        }
+
+        public init(version: Int = 4, face_type: FaceType, resource_directory: Bool? = true, customization: Customization, complications: Complications? = nil) {
+            self.version = version
+            self.face_type = face_type
+            self.resource_directory = resource_directory
+            self.customization = customization
+            self.complications = complications
         }
     }
 }

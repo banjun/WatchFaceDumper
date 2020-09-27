@@ -9,4 +9,13 @@ public struct Watchface {
     public var resources: Resources?
     public typealias ComplicationData = Metadata.ComplicationPositionDictionary<[String: Data]> // position -> (filename -> content)
     public var complicationData: ComplicationData? = nil
+
+    public init(metadata: Metadata, face: Face, snapshot: Data, no_borders_snapshot: Data, resources: Resources? = nil, complicationData: ComplicationData? = nil) {
+        self.metadata = metadata
+        self.face = face
+        self.snapshot = snapshot
+        self.no_borders_snapshot = no_borders_snapshot
+        self.resources = resources
+        self.complicationData = complicationData
+    }
 }

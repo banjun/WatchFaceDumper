@@ -8,5 +8,13 @@ extension Watchface.Metadata {
         public var gaugeStyle: Int // 0
         public var gaugeColors: [Color]
         public var gaugeColorLocations: [Double]?
+
+        public init(`class`: String = "CLKSimpleGaugeProvider", gaugeFillFraction: Double, gaugeStyle: Int, gaugeColors: [Color], gaugeColorLocations: [Double]? = nil) {
+            self.class = `class`
+            self.gaugeFillFraction = gaugeFillFraction
+            self.gaugeStyle = gaugeStyle
+            self.gaugeColors = gaugeColors
+            self.gaugeColorLocations = gaugeColorLocations
+        }
     }
 }

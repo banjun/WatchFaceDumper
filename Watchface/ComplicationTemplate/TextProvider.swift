@@ -30,6 +30,10 @@ extension Watchface.Metadata {
 
         private struct CLKTextProviderAny: Codable {
             var `class`: String
+
+            init(`class`: String) {
+                self.class = `class`
+            }
         }
     }
 
@@ -38,18 +42,37 @@ extension Watchface.Metadata {
         public var date: Date = .init()
         public var _uppercase: Bool = true
         public var calendarUnits: Int = 528
+
+        public init(`class`: String = "CLKDateTextProvider", date: Date = .init(), _uppercase: Bool = true, calendarUnits: Int = 528) {
+            self.class = `class`
+            self.date = date
+            self._uppercase = _uppercase
+            self.calendarUnits = calendarUnits
+        }
     }
 
     public struct CLKTimeTextProvider: Codable {
         public var `class`: String = "CLKTimeTextProvider"
         public var date: Date = .init()
         public var timeZone: String = "US/Pacific"
+
+        public init(`class`: String = "CLKTimeTextProvider", date: Date = .init(), timeZone: String = "US/Pacific") {
+            self.class = `class`
+            self.date = date
+            self.timeZone = timeZone
+        }
     }
 
     public struct CLKSimpleTextProvider: Codable {
         public var `class`: String = "CLKSimpleTextProvider"
         public var text: String = "サンフランシスコ"
         public var tintColor: Color?
+
+        public init(`class`: String = "CLKSimpleTextProvider", text: String = "サンフランシスコ", tintColor: Color? = nil) {
+            self.class = `class`
+            self.text = text
+            self.tintColor = tintColor
+        }
     }
 
     public struct CLKCompoundTextProvider: Codable {
@@ -61,6 +84,12 @@ extension Watchface.Metadata {
             case `class`
             case textProviders
             case format_segments = "format segments"
+        }
+
+        public init(`class`: String = "CLKCompoundTextProvider", textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())], format_segments: [String] = ["", " ", ""]) {
+            self.class = `class`
+            self.textProviders = textProviders
+            self.format_segments = format_segments
         }
     }
 }

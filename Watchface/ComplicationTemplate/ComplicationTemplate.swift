@@ -45,6 +45,10 @@ extension Watchface.Metadata {
 
         private struct CLKComplicationTemplateAny: Codable {
             var `class`: String
+
+            init(`class`: String) {
+                self.class = `class`
+            }
         }
     }
 
@@ -53,6 +57,13 @@ extension Watchface.Metadata {
         public var version: Int = 30000
         public var creationDate: Double = Date().timeIntervalSince1970
         public var textProvider: CLKTextProvider = .date(.init())
+
+        public init(`class`: String = "CLKComplicationTemplateUtilitarianSmallFlat", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, textProvider: CLKTextProvider = .date(.init())) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.textProvider = textProvider
+        }
     }
 
     public struct CLKComplicationTemplateUtilitarianLargeFlat: Codable {
@@ -61,6 +72,14 @@ extension Watchface.Metadata {
         public var creationDate: Double = Date().timeIntervalSince1970
         public var textProvider: CLKTextProvider = .date(.init())
         public var imageProvider: ImageProvider?
+
+        public init(`class`: String = "CLKComplicationTemplateUtilitarianLargeFlat", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, textProvider: CLKTextProvider = .date(.init()), imageProvider: ImageProvider? = nil) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.textProvider = textProvider
+            self.imageProvider = imageProvider
+        }
     }
 
     public struct CLKComplicationTemplateCircularSmallSimpleText: Codable {
@@ -69,6 +88,14 @@ extension Watchface.Metadata {
         public var creationDate: Double = Date().timeIntervalSince1970
         public var textProvider: CLKTextProvider = .date(.init())
         public var tintColor: Color
+
+        public init(`class`: String = "CLKComplicationTemplateCircularSmallSimpleText", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, textProvider: CLKTextProvider = .date(.init()), tintColor: Color) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.textProvider = textProvider
+            self.tintColor = tintColor
+        }
     }
 
     public struct CLKComplicationTemplateCircularSmallSimpleImage: Codable {
@@ -77,6 +104,14 @@ extension Watchface.Metadata {
         public var creationDate: Double = Date().timeIntervalSince1970
         public var imageProvider: ImageProvider
         public var tintColor: Color
+
+        public init(`class`: String = "CLKComplicationTemplateCircularSmallSimpleImage", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, imageProvider: ImageProvider, tintColor: Color) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.imageProvider = imageProvider
+            self.tintColor = tintColor
+        }
     }
 
     public struct CLKComplicationTemplateGraphicCornerGaugeText: Codable {
@@ -86,6 +121,15 @@ extension Watchface.Metadata {
         public var leadingTextProvider: CLKTextProvider
         public var outerTextProvider: CLKTextProvider
         public var gaugeProvider: CLKSimpleGaugeProvider
+
+        public init(`class`: String = "CLKComplicationTemplateGraphicCornerGaugeText", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, leadingTextProvider: CLKTextProvider, outerTextProvider: CLKTextProvider, gaugeProvider: CLKSimpleGaugeProvider) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.leadingTextProvider = leadingTextProvider
+            self.outerTextProvider = outerTextProvider
+            self.gaugeProvider = gaugeProvider
+        }
     }
 
     public struct CLKComplicationTemplateGraphicCornerTextImage: Codable {
@@ -95,6 +139,15 @@ extension Watchface.Metadata {
         public var textProvider: CLKTextProvider
         public var imageProvider: ImageProvider
         public var tintColor: Color?
+
+        public init(`class`: String = "CLKComplicationTemplateGraphicCornerTextImage", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, textProvider: CLKTextProvider, imageProvider: ImageProvider, tintColor: Color? = nil) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.textProvider = textProvider
+            self.imageProvider = imageProvider
+            self.tintColor = tintColor
+        }
     }
 
     public struct CLKComplicationTemplateGraphicBezelCircularText: Codable {
@@ -109,7 +162,25 @@ extension Watchface.Metadata {
             public var version: Int = 30000
             public var metadata: Metadata
             public var creationDate: Double = Date().timeIntervalSince1970
-            public struct Metadata: Codable {}
+            public struct Metadata: Codable {
+                public init() {}
+            }
+
+            public init(`class`: String = "CLKComplicationTemplateGraphicCircularMetadata", version: Int = 30000, metadata: Metadata, creationDate: Double = Date().timeIntervalSince1970) {
+                self.class = `class`
+                self.version = version
+                self.metadata = metadata
+                self.creationDate = creationDate
+            }
+        }
+
+        public init(`class`: String = "CLKComplicationTemplateGraphicBezelCircularText", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, textProvider: CLKTextProvider, BezelCircularClassName: String = "CLKComplicationTemplateGraphicCircularMetadata", circularTemplate: CircularTemplate) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.textProvider = textProvider
+            self.BezelCircularClassName = BezelCircularClassName
+            self.circularTemplate = circularTemplate
         }
     }
 
@@ -118,6 +189,13 @@ extension Watchface.Metadata {
         public var version: Int = 30000
         public var creationDate: Double = Date().timeIntervalSince1970
         public var imageProvider: ImageProvider
+
+        public init(`class`: String = "CLKComplicationTemplateGraphicCircularImage", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, imageProvider: ImageProvider) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.imageProvider = imageProvider
+        }
     }
 
     public struct CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText: Codable {
@@ -127,5 +205,14 @@ extension Watchface.Metadata {
         public var centerTextProvider: CLKTextProvider
         public var bottomTextProvider: CLKTextProvider
         public var gaugeProvider: CLKSimpleGaugeProvider
+
+        public init(`class`: String = "CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText", version: Int = 30000, creationDate: Double = Date().timeIntervalSince1970, centerTextProvider: CLKTextProvider, bottomTextProvider: CLKTextProvider, gaugeProvider: CLKSimpleGaugeProvider) {
+            self.class = `class`
+            self.version = version
+            self.creationDate = creationDate
+            self.centerTextProvider = centerTextProvider
+            self.bottomTextProvider = bottomTextProvider
+            self.gaugeProvider = gaugeProvider
+        }
     }
 }

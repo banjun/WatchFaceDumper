@@ -1,0 +1,15 @@
+format:
+  indent: 4
+  lineBreakBeforeEachArgument: false
+targets:
+  main:
+    paths:
+    - "Watchface/**/*.swift"
+    rules:
+      defaultAccessLevel:
+        accessLevel: openOrPublic
+        implicitInternal: true
+      defaultMemberwiseInitializer:
+        implicitInitializer: false
+        implicitInternal: true
+        ignoreClassesWithInheritance: false

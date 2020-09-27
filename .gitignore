@@ -24,4 +24,5 @@ xcuserdata/
 *.xccheckout
 *.xcscmblueprint
 
-
+## SPM
+/.build/

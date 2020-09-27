@@ -67,6 +67,20 @@ extension Watchface {
                     }
                 }
             }
+
+            public init(top: Value? = nil, bottom: Value? = nil, top_left: Value? = nil, top_right: Value? = nil, bottom_left: Value? = nil, bottom_center: Value? = nil, bottom_right: Value? = nil, slot1: Value? = nil, slot2: Value? = nil, slot3: Value? = nil, bezel: Value? = nil) {
+                self.top = top
+                self.bottom = bottom
+                self.top_left = top_left
+                self.top_right = top_right
+                self.bottom_left = bottom_left
+                self.bottom_center = bottom_center
+                self.bottom_right = bottom_right
+                self.slot1 = slot1
+                self.slot2 = slot2
+                self.slot3 = slot3
+                self.bezel = bezel
+            }
         }
 
         public struct Color: Codable {
@@ -74,6 +88,22 @@ extension Watchface {
             public var green: Double
             public var blue: Double
             public var alpha: Double
+
+            public init(red: Double, green: Double, blue: Double, alpha: Double) {
+                self.red = red
+                self.green = green
+                self.blue = blue
+                self.alpha = alpha
+            }
         }
+
+        public init(version: Int = 2, complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>, complications_names: ComplicationPositionDictionary<String>, complications_item_ids: ComplicationPositionDictionary<Int>, complications_bundle_ids: ComplicationPositionDictionary<String>? = nil) {
+            self.version = version
+            self.complication_sample_templates = complication_sample_templates
+            self.complications_names = complications_names
+            self.complications_item_ids = complications_item_ids
+            self.complications_bundle_ids = complications_bundle_ids
+        }
+
     }
 }

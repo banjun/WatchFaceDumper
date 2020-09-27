@@ -26,10 +26,31 @@ extension Watchface.Metadata {
                 case file_name = "file name"
                 case scale, renderingMode
             }
+
+            public init(file_name: String, scale: Int, renderingMode: Int) {
+                self.file_name = file_name
+                self.scale = scale
+                self.renderingMode = renderingMode
+            }
         }
 
         public struct ChildImageProvider: Codable {
             public var onePieceImage: Item?
+
+            public init(onePieceImage: Item? = nil) {
+                self.onePieceImage = onePieceImage
+            }
+        }
+
+        public init(onePieceImage: Item? = nil, twoPieceImageBackground: Item? = nil, twoPieceImageForeground: Item? = nil, fullColorImage: Item? = nil, tintedImageProvider: ChildImageProvider? = nil, monochromeFilterType: Int? = nil, applyScalingAndCircularMask: Bool? = nil, prefersFilterOverTransition: Bool? = nil) {
+            self.onePieceImage = onePieceImage
+            self.twoPieceImageBackground = twoPieceImageBackground
+            self.twoPieceImageForeground = twoPieceImageForeground
+            self.fullColorImage = fullColorImage
+            self.tintedImageProvider = tintedImageProvider
+            self.monochromeFilterType = monochromeFilterType
+            self.applyScalingAndCircularMask = applyScalingAndCircularMask
+            self.prefersFilterOverTransition = prefersFilterOverTransition
         }
     }
 }
