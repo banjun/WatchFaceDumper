@@ -3,7 +3,8 @@ import Foundation
 extension Watchface {
     public struct Resources {
         public var images: Metadata
-        public var files: [String: Data] // filename -> content
+        /// filename -> content
+        public var files: [String: Data]
 
         public struct Metadata: Codable {
             public var imageList: [Item]
@@ -25,10 +26,14 @@ extension Watchface {
                     public var version: Int = 1
                 }
 
-                public var topAnalysis: Analysis? // photos has some, kaleidoscope has none
-                public var leftAnalysis: Analysis? // photos has some, kaleidoscope has none
-                public var bottomAnalysis: Analysis? // photos has some, kaleidoscope has none
-                public var rightAnalysis: Analysis? // photos has some, kaleidoscope has none
+                /// photos has some, kaleidoscope has none
+                public var topAnalysis: Analysis?
+                /// photos has some, kaleidoscope has none
+                public var leftAnalysis: Analysis?
+                /// photos has some, kaleidoscope has none
+                public var bottomAnalysis: Analysis?
+                /// photos has some, kaleidoscope has none
+                public var rightAnalysis: Analysis?
 
                 public var imageURL: String
 

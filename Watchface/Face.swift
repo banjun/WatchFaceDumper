@@ -4,7 +4,8 @@ extension Watchface {
     public struct Face: Codable {
         public var version: Int = 4
         public var face_type: FaceType
-        public var resource_directory: Bool? = true // infograph: nil
+        /// infograph: nil
+        public var resource_directory: Bool? = true
         public var customization: Customization
         public var complications: Complications?
 
@@ -17,16 +18,23 @@ extension Watchface {
         }
 
         public enum FaceType: String, Codable {
-            case photos // has [top, bottom]
-            case kaleidoscope // has [top-left, top-right, bottom-center]
-            case whistler_analog = "whistler-analog" // aka infograph
+            /// has [top, bottom]
+            case photos
+            /// has [top-left, top-right, bottom-center]
+            case kaleidoscope
+            /// aka infograph
+            case whistler_analog = "whistler-analog"
         }
 
         public struct Customization: Codable {
-            public var color: String? // photo: "none"
-            public var content: String? // photo: "custom", kaleidoscope: "asset custom", infograph: nil
-            public var position: String? // "top"
-            public var style: String? // kaleidoscope: "radial"
+            /// photo: "none"
+            public var color: String?
+            /// photo: "custom", kaleidoscope: "asset custom", infograph: nil
+            public var content: String?
+            /// "top"
+            public var position: String?
+            /// kaleidoscope: "radial"
+            public var style: String?
         }
 
         public struct Complications: Codable {
@@ -56,8 +64,10 @@ extension Watchface {
             }
 
             public struct Item: Codable {
-                public var app: String // "date", "weather", "heartrate", "com.apple.shortcuts.watch"
-                public var `extension`: String? // "com.apple.shortcuts.watch"
+                /// "date", "weather", "heartrate", "com.apple.shortcuts.watch"
+                public var app: String
+                /// "com.apple.shortcuts.watch"
+                public var `extension`: String?
                 public var complication_descriptor: ComplicationDescriptor?
 
                 private enum CodingKeys: String, CodingKey {
@@ -67,9 +77,12 @@ extension Watchface {
 
                 public struct ComplicationDescriptor: Codable {
                     public var displayName: String
-                    public var supportedFamilies: [Int] // [0, 1, ..., 12]
-                    public var identifier: String // UUID
-                    public var userActivity: String? // Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
+                    /// [0, 1, ..., 12]
+                    public var supportedFamilies: [Int]
+                    /// UUID
+                    public var identifier: String
+                    /// Base64 encoded NSKeyedArchiver archived UAUserActivityInfo
+                    public var userActivity: String?
                 }
             }
         }

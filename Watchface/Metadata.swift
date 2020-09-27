@@ -3,11 +3,13 @@ import Foundation
 extension Watchface {
     public struct Metadata: Codable {
         public var version: Int = 2
-        public var device_size = 2 // 38mm, 42mm?
+        // 38mm, 42mm?
+        public var device_size = 2
         public var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
         public var complications_names: ComplicationPositionDictionary<String>
         public var complications_item_ids: ComplicationPositionDictionary<Int>
-        public var complications_bundle_ids: ComplicationPositionDictionary<String>? // com.apple.weather.watchapp, com.apple.HeartRate, com.apple.NanoCalendar
+        // com.apple.weather.watchapp, com.apple.HeartRate, com.apple.NanoCalendar
+        public var complications_bundle_ids: ComplicationPositionDictionary<String>?
 
         public struct ComplicationPositionDictionary<Value: Codable>: Codable {
             public var top: Value?
