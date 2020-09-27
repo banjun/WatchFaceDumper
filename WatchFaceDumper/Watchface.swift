@@ -1,5 +1,4 @@
 import Foundation
-import MirrorDiffKit
 
 struct Watchface {
     var metadata: Metadata
@@ -394,12 +393,24 @@ extension Watchface {
         guard let left = try? FileWrapper(watchface: self) else { return false }
         guard left.isDirectory == right.isDirectory else { return false }
 
+        func diff(between a: NSDictionary?, and b: NSDictionary?) -> String {
+            guard a != b else { return "" }
+            return Set((a?.allKeys as? [String] ?? []) + (b?.allKeys as? [String] ?? [])).map { key in
+                let av = a?[key] as AnyObject
+                let bv = b?[key] as AnyObject
+                guard !av.isEqual(bv) else { return nil }
+                switch (av, bv) {
+                case (let ad as NSDictionary, let bd as NSDictionary): return diff(between: ad, and: bd)
+                default: return "- \(key): \(av.debugDescription ?? "(null)")\n+ \(key): \(bv.debugDescription ?? "(null)")"
+                }
+            }.compactMap {$0}.joined(separator: "\n")
+        }
+
         func isEqualJSONFiles(left: FileWrapper, right: FileWrapper, filename: String) -> Bool {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? JSONSerialization.jsonObject(with: $0, options: []) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):")
-                print(diff(between: l.debugDescription, and: r.debugDescription))
+                NSLog("%@", "detect differences in \(filename):\n\(diff(between: l, and: r))")
             }
             return l == r
         }
@@ -407,8 +418,7 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             let r = right.fileWrappers?[filename]?.regularFileContents.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil) as? NSDictionary}
             if l != r {
-                NSLog("%@", "detect differences in \(filename):")
-                print(diff(between: l.debugDescription, and: r.debugDescription))
+                NSLog("%@", "detect differences in \(filename):\n\(diff(between: l, and: r))")
             }
             return l == r
         }
@@ -416,8 +426,7 @@ extension Watchface {
             let l = left.fileWrappers?[filename]?.regularFileContents
             let r = right.fileWrappers?[filename]?.regularFileContents
             if l != r {
-                NSLog("%@", "detect differences in \(filename):")
-                print(diff(between: l.debugDescription, and: r.debugDescription))
+                NSLog("%@", "detect differences in \(filename):\nleft: \(l.debugDescription)\nright: \(r.debugDescription)")
             }
             return l == r
         }
