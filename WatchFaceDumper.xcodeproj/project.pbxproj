@@ -19,6 +19,14 @@
 		EA4E9700251267B5008D822B /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4E96FF251267B5008D822B /* WindowController.swift */; };
 		EA76F8D3251B906800B395EC /* ImageListOutlineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */; };
 		EA76F8D8251B94E700B395EC /* MetadataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */; };
+		EA9D41252520BE8900838E68 /* ComplicationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41242520BE8900838E68 /* ComplicationTemplate.swift */; };
+		EA9D41292520BEE000838E68 /* TextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41282520BEE000838E68 /* TextProvider.swift */; };
+		EA9D412C2520BF5100838E68 /* ImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D412B2520BF5100838E68 /* ImageProvider.swift */; };
+		EA9D412F2520BF5700838E68 /* GaugeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D412E2520BF5700838E68 /* GaugeProvider.swift */; };
+		EA9D41322520BFB800838E68 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41312520BFB800838E68 /* Metadata.swift */; };
+		EA9D41352520BFD300838E68 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41342520BFD300838E68 /* Face.swift */; };
+		EA9D41382520C00800838E68 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41372520C00800838E68 /* Resources.swift */; };
+		EA9D41442520C11A00838E68 /* Watchface+FileWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +46,14 @@
 		EA4E96FF251267B5008D822B /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListOutlineViewModel.swift; sourceTree = "<group>"; };
 		EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataViewModel.swift; sourceTree = "<group>"; };
+		EA9D41242520BE8900838E68 /* ComplicationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationTemplate.swift; sourceTree = "<group>"; };
+		EA9D41282520BEE000838E68 /* TextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextProvider.swift; sourceTree = "<group>"; };
+		EA9D412B2520BF5100838E68 /* ImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProvider.swift; sourceTree = "<group>"; };
+		EA9D412E2520BF5700838E68 /* GaugeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeProvider.swift; sourceTree = "<group>"; };
+		EA9D41312520BFB800838E68 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
+		EA9D41342520BFD300838E68 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
+		EA9D41372520C00800838E68 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
+		EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Watchface+FileWrapper.swift"; sourceTree = "<group>"; };
 		FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WatchFaceDumper.release.xcconfig"; path = "Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,13 +115,37 @@
 				EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */,
 				EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */,
 				EA4D31BD24FFE37100104A33 /* Document.swift */,
-				EA23D87E24FFF39F009A80D4 /* Watchface.swift */,
+				EA9D41232520BE6D00838E68 /* Watchface */,
 				EA4D31BF24FFE37200104A33 /* Assets.xcassets */,
 				EA4D31C124FFE37200104A33 /* Main.storyboard */,
 				EA4D31C424FFE37200104A33 /* Info.plist */,
 				EA4D31C524FFE37200104A33 /* WatchFaceDumper.entitlements */,
 			);
 			path = WatchFaceDumper;
+			sourceTree = "<group>";
+		};
+		EA9D41232520BE6D00838E68 /* Watchface */ = {
+			isa = PBXGroup;
+			children = (
+				EA23D87E24FFF39F009A80D4 /* Watchface.swift */,
+				EA9D41312520BFB800838E68 /* Metadata.swift */,
+				EA9D41342520BFD300838E68 /* Face.swift */,
+				EA9D41372520C00800838E68 /* Resources.swift */,
+				EA9D41552520C33400838E68 /* ComplicationTemplate */,
+				EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */,
+			);
+			path = Watchface;
+			sourceTree = "<group>";
+		};
+		EA9D41552520C33400838E68 /* ComplicationTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				EA9D41242520BE8900838E68 /* ComplicationTemplate.swift */,
+				EA9D41282520BEE000838E68 /* TextProvider.swift */,
+				EA9D412B2520BF5100838E68 /* ImageProvider.swift */,
+				EA9D412E2520BF5700838E68 /* GaugeProvider.swift */,
+			);
+			path = ComplicationTemplate;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,12 +261,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA9D41322520BFB800838E68 /* Metadata.swift in Sources */,
 				EA23D87F24FFF39F009A80D4 /* Watchface.swift in Sources */,
+				EA9D41252520BE8900838E68 /* ComplicationTemplate.swift in Sources */,
 				EA4E96F92512642D008D822B /* ImageItemRowView.swift in Sources */,
+				EA9D41442520C11A00838E68 /* Watchface+FileWrapper.swift in Sources */,
 				EA4E96FC25126454008D822B /* EditableAVPlayerView.swift in Sources */,
+				EA9D41382520C00800838E68 /* Resources.swift in Sources */,
 				EA4E9700251267B5008D822B /* WindowController.swift in Sources */,
 				EA4D31BC24FFE37100104A33 /* ViewController.swift in Sources */,
+				EA9D41352520BFD300838E68 /* Face.swift in Sources */,
+				EA9D412F2520BF5700838E68 /* GaugeProvider.swift in Sources */,
 				EA4D31BA24FFE37100104A33 /* AppDelegate.swift in Sources */,
+				EA9D41292520BEE000838E68 /* TextProvider.swift in Sources */,
+				EA9D412C2520BF5100838E68 /* ImageProvider.swift in Sources */,
 				EA76F8D8251B94E700B395EC /* MetadataViewModel.swift in Sources */,
 				EA4D31BE24FFE37100104A33 /* Document.swift in Sources */,
 				EA76F8D3251B906800B395EC /* ImageListOutlineViewModel.swift in Sources */,
