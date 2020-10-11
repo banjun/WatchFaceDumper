@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "Watchface"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "Apple Watch watch face file (.watchface) decoder/encoder"
   spec.description  = <<-DESC
   Apple Watch watch face file (.watchface) decoder / encoder with NSFileWrapper support
