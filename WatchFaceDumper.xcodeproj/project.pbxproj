@@ -28,6 +28,7 @@
 		EA9D41352520BFD300838E68 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41342520BFD300838E68 /* Face.swift */; };
 		EA9D41382520C00800838E68 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41372520C00800838E68 /* Resources.swift */; };
 		EA9D41442520C11A00838E68 /* Watchface+FileWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */; };
+		EAD954F1256E7D5D004EBB02 /* EditableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD954F0256E7D5D004EBB02 /* EditableImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		EA9D41342520BFD300838E68 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
 		EA9D41372520C00800838E68 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Watchface+FileWrapper.swift"; sourceTree = "<group>"; };
+		EAD954F0256E7D5D004EBB02 /* EditableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableImageView.swift; sourceTree = "<group>"; };
 		FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WatchFaceDumper.release.xcconfig"; path = "Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -114,6 +116,7 @@
 				EA4E96FF251267B5008D822B /* WindowController.swift */,
 				EA4D31BB24FFE37100104A33 /* ViewController.swift */,
 				EA4E96F82512642D008D822B /* ImageItemRowView.swift */,
+				EAD954F0256E7D5D004EBB02 /* EditableImageView.swift */,
 				EA4E96FB25126454008D822B /* EditableAVPlayerView.swift */,
 				EA76F8D2251B906800B395EC /* ImageListOutlineViewModel.swift */,
 				EA76F8D7251B94E700B395EC /* MetadataViewModel.swift */,
@@ -286,6 +289,7 @@
 				EA9D412F2520BF5700838E68 /* GaugeProvider.swift in Sources */,
 				EA4D31BA24FFE37100104A33 /* AppDelegate.swift in Sources */,
 				EA9D41292520BEE000838E68 /* TextProvider.swift in Sources */,
+				EAD954F1256E7D5D004EBB02 /* EditableImageView.swift in Sources */,
 				EA9D412C2520BF5100838E68 /* ImageProvider.swift in Sources */,
 				EA76F8D8251B94E700B395EC /* MetadataViewModel.swift in Sources */,
 				EA4D31BE24FFE37100104A33 /* Document.swift in Sources */,

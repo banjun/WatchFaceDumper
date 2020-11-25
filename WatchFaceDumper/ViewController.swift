@@ -52,6 +52,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         $0.delegate = self
         $0.dataSource = self
         $0.usesAutomaticRowHeights = true
+        if #available(OSX 11.0, *) {
+            $0.style = .plain
+        }
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageItem")) ※ {$0.title = "Resources/"})
     }
     private(set) lazy var imageListOutlineViewModel = ImageListOutlineViewModel() ※ {

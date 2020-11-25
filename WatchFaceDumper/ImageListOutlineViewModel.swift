@@ -75,5 +75,6 @@ final class ImageListOutlineViewModel: NSObject, NSOutlineViewDelegate, NSOutlin
         (cell as? NSTextFieldCell)?.isEditable = false
         (cell as? NSTextFieldCell)?.isSelectable = true
         (cell as? NSTextFieldCell)?.truncatesLastVisibleLine = true
+        (cell as? NSTextFieldCell)?.truncatesLastVisibleLine = true
     }
 }

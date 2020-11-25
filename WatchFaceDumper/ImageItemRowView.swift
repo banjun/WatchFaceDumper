@@ -3,10 +3,7 @@ import Ikemen
 
 final class ImageItemRowView: NSTableRowView {
     private let titleLabel = NSTextField(labelWithString: "")
-    private let imageView = NSImageView() ※ {
-        $0.imageFrameStyle = .photo
-        $0.isEditable = true
-    }
+    private let imageView = EditableImageView()
     private var imageViewAspectConstraint: NSLayoutConstraint? {
         didSet {
             oldValue?.isActive = false
@@ -35,8 +32,10 @@ final class ImageItemRowView: NSTableRowView {
         let autolayout = northLayoutFormat([:], [
             "title": titleLabel,
             "image": imageView ※ {
-                $0.target = self
-                $0.action = #selector(imageViewDidChangeValue(_:))
+                $0.imageDidChange = { [weak self] in
+                    self?.item.image = $0
+                    self?.imageDidChange?($0)
+                }
             },
             "movie": movieView ※ { movieView in
                 movieView.dataDidChange = { [weak self] data in
@@ -72,10 +71,5 @@ final class ImageItemRowView: NSTableRowView {
             movieView.data = item.movie
         }
         movieView.controlsStyle = item.movie != nil ? .minimal : .none
-    }
-
-    @IBAction func imageViewDidChangeValue(_ sender: Any?) {
-        item.image = imageView.image
-        imageDidChange?(imageView.image)
     }
 }
