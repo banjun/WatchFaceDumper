@@ -174,8 +174,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
         imageItems = watchface.resources.map { resources in
             resources.images.imageList
-                .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
-                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
+                .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL], ImageCrop($0))}
+                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1, imageCrop: $0.2)}
         } ?? []
 
         imageListOutlineViewModel.setWatchface(watchface)

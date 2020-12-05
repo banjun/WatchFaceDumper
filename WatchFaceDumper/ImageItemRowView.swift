@@ -17,6 +17,7 @@ final class ImageItemRowView: NSTableRowView {
     struct ImageItem {
         var image: NSImage?
         var movie: Data?
+        var imageCrop: ImageCrop
     }
 
     var item: ImageItem {
@@ -66,6 +67,7 @@ final class ImageItemRowView: NSTableRowView {
         imageViewAspectConstraint = item.image.map { image in
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: image.size.width / image.size.height)
         }
+        imageView.imageCrop = item.imageCrop
 
         if movieView.data != item.movie {
             movieView.data = item.movie
