@@ -32,6 +32,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private lazy var metadataOutlineView: NSOutlineView = .init() ※ {
         $0.delegate = metadataViewModel
         $0.dataSource = metadataViewModel
+        if #available(macOS 11, *) {
+            $0.rowHeight = 18 // Big Sur default is ugly high
+        }
         $0.addTableColumn(.init(identifier: .init(rawValue: "Metadata")) ※ {$0.title = "metadta.json & face.json & complicationData/"})
     }
     private lazy var imageListSplitView = NSSplitView() ※ { split in
@@ -66,6 +69,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private(set) lazy var imageListOutlineView: NSOutlineView = .init() ※ {
         $0.delegate = imageListOutlineViewModel
         $0.dataSource = imageListOutlineViewModel
+        if #available(macOS 11, *) {
+            $0.rowHeight = 18 // Big Sur default is ugly high
+        }
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageList")) ※ {$0.title = "Resources/Images.plist"})
     }
     private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
