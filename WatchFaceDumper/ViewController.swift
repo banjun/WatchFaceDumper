@@ -14,6 +14,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private let snapshotsStackView = NSStackView() ※ {
         $0.orientation = .horizontal
         $0.alignment = .centerY
+        $0.distribution = .fillEqually
     }
     private let snapshot = NSImageView()
     private let snapshotLabel = NSTextField(labelWithString: "snapshot") ※ {
@@ -22,6 +23,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     private let noBordersSnapshot = NSImageView()
     private let noBordersSnapshotLabel = NSTextField(labelWithString: "no_borders_snapshot") ※ {
         $0.alignment = .center
+        $0.lineBreakMode = .byTruncatingTail
     }
     private lazy var metadataViewModel: MetadataViewModel = .init() ※ {
         $0.reloadAndExpand = { [weak self] in
@@ -74,8 +76,22 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         }
         $0.addTableColumn(.init(identifier: .init(rawValue: "ImageList")) ※ {$0.title = "Resources/Images.plist"})
     }
-    private let complicationsTopLabel = NSTextField(labelWithString: "complications.top")
-    private let complicationsBottomLabel = NSTextField(labelWithString: "complications.bottom")
+    private let complicationsTopLabel = NSTextField() ※ {
+        $0.stringValue = "complications.top"
+        $0.drawsBackground = false
+        $0.isBezeled = false
+        $0.isEditable = false
+        $0.maximumNumberOfLines = 0
+        $0.setContentCompressionResistancePriority(.init(rawValue: 9), for: .horizontal)
+    }
+    private let complicationsBottomLabel = NSTextField() ※ {
+        $0.stringValue = "complications.bottom"
+        $0.drawsBackground = false
+        $0.isBezeled = false
+        $0.isEditable = false
+        $0.maximumNumberOfLines = 0
+        $0.setContentCompressionResistancePriority(.init(rawValue: 9), for: .horizontal)
+    }
 
     init(document: Document) {
         self.document = document
@@ -96,11 +112,10 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             "snapshots": snapshotsStackView ※ {
                 $0.addArrangedSubview(NSView() ※ {
                     let autolayout = $0.northLayoutFormat([:], [
-                        "snapshot": snapshot ※ {
-                            $0.setContentHuggingPriority(.required, for: .horizontal)
-                            $0.setContentHuggingPriority(.required, for: .vertical)
-                        },
-                        "label": snapshotLabel
+                        "snapshot": snapshot,
+                        "label": snapshotLabel ※ {
+                            $0.setContentCompressionResistancePriority(.fittingSizeCompression, for: .horizontal)
+                        }
                     ])
                     autolayout("H:|[snapshot]|")
                     autolayout("H:|[label]|")
@@ -108,16 +123,20 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 })
                 $0.addArrangedSubview(NSView() ※ {
                     let autolayout = $0.northLayoutFormat([:], [
-                        "snapshot": noBordersSnapshot ※ {
-                            $0.setContentHuggingPriority(.required, for: .horizontal)
-                            $0.setContentHuggingPriority(.required, for: .vertical)
-                        },
-                        "label": noBordersSnapshotLabel
+                        "snapshot": noBordersSnapshot,
+                        "label": noBordersSnapshotLabel ※ {
+                            $0.setContentCompressionResistancePriority(.fittingSizeCompression, for: .horizontal)
+                        }
                     ])
                     autolayout("H:|[snapshot]|")
                     autolayout("H:|[label]|")
                     autolayout("V:|[snapshot]-[label]|")
                 })
+                
+                let snapshotDefaultSize = CGSize(width: 486, height: 591)
+                let noBordersSnapshotDefaultSize = CGSize(width: 623, height: 757)
+                snapshot.heightAnchor.constraint(equalTo: snapshot.widthAnchor, multiplier: snapshotDefaultSize.height / snapshotDefaultSize.width).isActive = true
+                noBordersSnapshot.heightAnchor.constraint(equalTo: noBordersSnapshot.widthAnchor, multiplier: noBordersSnapshotDefaultSize.height / noBordersSnapshotDefaultSize.width).isActive = true
             },
             "metadata": NSScrollView() ※ { sv in
                 sv.hasHorizontalScroller = true
@@ -130,7 +149,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         ])
         autolayout("H:|-pp-[type]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[snapshots]-pp-[imageListSplitView(>=400)]|")
-        autolayout("H:|-pp-[metadata]-pp-[imageListSplitView]")
+        autolayout("H:|-pp-[metadata(256)]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsTop]-pp-[imageListSplitView]")
         autolayout("H:|-pp-[complicationsBottom]-pp-[imageListSplitView]")
         autolayout("V:|-pp-[type]-[snapshots]-pp-[metadata(>=200)]-[complicationsTop]-[complicationsBottom]-pp-|")
@@ -147,7 +166,9 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         faceTypeLabel.stringValue = faceType.first!.uppercased() + faceType.dropFirst() + " watch face"
 
         snapshot.image = NSImage(data: watchface.snapshot)
+        snapshot.imageFrameStyle = snapshot.image.map {_ in .none} ?? .grayBezel
         noBordersSnapshot.image = NSImage(data: watchface.no_borders_snapshot)
+        noBordersSnapshot.imageFrameStyle = snapshot.image.map {_ in .none} ?? .grayBezel
 
         metadataViewModel.setWatchface(watchface)
 
