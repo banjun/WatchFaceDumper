@@ -313,6 +313,12 @@ extension Watchface.Metadata.CLKTextProvider {
             return zip(p.format_segments, p.textProviders.map {$0.sampleText ?? ""}).map {$0 + $1}.joined() + (p.format_segments.last ?? "")
         case .simple(let p):
             return p.text
+        case .relativeDate(let p):
+            let df = DateFormatter()
+            df.dateStyle = .short
+            df.timeStyle = .short
+            df.doesRelativeDateFormatting = true
+            return df.string(from: p.date)
         }
     }
 }

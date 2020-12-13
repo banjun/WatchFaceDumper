@@ -6,14 +6,16 @@ extension Watchface.Metadata {
         case time(CLKTimeTextProvider)
         case compound(CLKCompoundTextProvider)
         case simple(CLKSimpleTextProvider)
+        case relativeDate(CLKRelativeDateTextProvider)
 
         public init(from decoder: Decoder) throws {
             let anyProvider = try CLKTextProviderAny(from: decoder)
             switch anyProvider.class {
-            case "CLKDateTextProvider": self = .date(try .init(from: decoder))
-            case "CLKTimeTextProvider": self = .time(try .init(from: decoder))
-            case "CLKCompoundTextProvider": self = .compound(try .init(from: decoder))
-            case "CLKSimpleTextProvider": self = .simple(try .init(from: decoder))
+            case CLKDateTextProvider.class: self = .date(try .init(from: decoder))
+            case CLKTimeTextProvider.class: self = .time(try .init(from: decoder))
+            case CLKCompoundTextProvider.class: self = .compound(try .init(from: decoder))
+            case CLKSimpleTextProvider.class: self = .simple(try .init(from: decoder))
+            case CLKRelativeDateTextProvider.class: self = .relativeDate(try .init(from: decoder))
             default:
                 throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "unknown CLKTextProvider type: \(anyProvider.class)"))
             }
@@ -25,6 +27,7 @@ extension Watchface.Metadata {
             case .time(let p): try p.encode(to: encoder)
             case .compound(let p): try p.encode(to: encoder)
             case .simple(let p): try p.encode(to: encoder)
+            case .relativeDate(let p): try p.encode(to: encoder)
             }
         }
 
@@ -38,12 +41,13 @@ extension Watchface.Metadata {
     }
 
     public struct CLKDateTextProvider: Codable {
-        public var `class`: String = "CLKDateTextProvider"
+        public static let `class`: String = "CLKDateTextProvider"
+        public var `class`: String = Self.class
         public var date: Date = .init()
         public var _uppercase: Bool = true
         public var calendarUnits: Int = 528
 
-        public init(`class`: String = "CLKDateTextProvider", date: Date = .init(), _uppercase: Bool = true, calendarUnits: Int = 528) {
+        public init(`class`: String = Self.class, date: Date = .init(), _uppercase: Bool = true, calendarUnits: Int = 528) {
             self.class = `class`
             self.date = date
             self._uppercase = _uppercase
@@ -52,11 +56,12 @@ extension Watchface.Metadata {
     }
 
     public struct CLKTimeTextProvider: Codable {
-        public var `class`: String = "CLKTimeTextProvider"
+        public static let `class`: String = "CLKTimeTextProvider"
+        public var `class`: String = Self.class
         public var date: Date = .init()
         public var timeZone: String = "US/Pacific"
 
-        public init(`class`: String = "CLKTimeTextProvider", date: Date = .init(), timeZone: String = "US/Pacific") {
+        public init(`class`: String = Self.class, date: Date = .init(), timeZone: String = "US/Pacific") {
             self.class = `class`
             self.date = date
             self.timeZone = timeZone
@@ -64,11 +69,12 @@ extension Watchface.Metadata {
     }
 
     public struct CLKSimpleTextProvider: Codable {
-        public var `class`: String = "CLKSimpleTextProvider"
+        public static let `class`: String = "CLKSimpleTextProvider"
+        public var `class`: String = Self.class
         public var text: String = "サンフランシスコ"
         public var tintColor: Color?
 
-        public init(`class`: String = "CLKSimpleTextProvider", text: String = "サンフランシスコ", tintColor: Color? = nil) {
+        public init(`class`: String = Self.class, text: String = "サンフランシスコ", tintColor: Color? = nil) {
             self.class = `class`
             self.text = text
             self.tintColor = tintColor
@@ -76,7 +82,8 @@ extension Watchface.Metadata {
     }
 
     public struct CLKCompoundTextProvider: Codable {
-        public var `class`: String = "CLKCompoundTextProvider"
+        public static let `class` = "CLKCompoundTextProvider"
+        public var `class`: String = Self.class
         public var textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())]
         public var format_segments: [String] = ["", " ", ""]
 
@@ -86,10 +93,25 @@ extension Watchface.Metadata {
             case format_segments = "format segments"
         }
 
-        public init(`class`: String = "CLKCompoundTextProvider", textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())], format_segments: [String] = ["", " ", ""]) {
+        public init(`class`: String = Self.class, textProviders: [CLKTextProvider] = [.time(.init()), .simple(.init())], format_segments: [String] = ["", " ", ""]) {
             self.class = `class`
             self.textProviders = textProviders
             self.format_segments = format_segments
+        }
+    }
+    
+    public struct CLKRelativeDateTextProvider: Codable {
+        public static let `class` = "CLKRelativeDateTextProvider"
+        public var `class`: String = Self.class
+        public var calendarUnits: UInt // CFCalendarUnit [.day, .hour, .minute]
+        public var relativeDateStyle: Int
+        public var date: Date
+        
+        public init(`class`: String = Self.class, calendarUnits: UInt = ([.day, .hour, .minute] as CFCalendarUnit).rawValue, relativeDateStyle: Int = 0, date: Date = .init()) {
+            self.class = `class`
+            self.calendarUnits = calendarUnits
+            self.relativeDateStyle = relativeDateStyle
+            self.date = date
         }
     }
 }
