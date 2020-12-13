@@ -175,7 +175,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         imageItems = watchface.resources.map { resources in
             resources.images.imageList
                 .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
-                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1)}
+                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1.map {($0, nil)})}
         } ?? []
 
         imageListOutlineViewModel.setWatchface(watchface)
@@ -186,7 +186,10 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
 
     typealias ImageItem = ImageItemRowView.ImageItem
     var imageItems: [ImageItem] = [] {
-        didSet { imageListTableView.reloadData() }
+        didSet {
+            guard imageItems != oldValue else { return }
+            imageListTableView.reloadData()
+        }
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {imageItems.count}
@@ -211,14 +214,16 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 }
                 self.reloadDocument()
             }
-            $0.movieDidChange = { [weak self] movie in
+            $0.movieDidChange = { [weak self] in
                 guard let self = self else { return }
+                let (movie, duration) = ($0?.data, $0?.duration.flatMap {$0 > 0 ? $0 : nil})
                 self.document.watchface = self.document.watchface ※ { watchface in
                     guard let irisVideoURL = watchface.resources?.images.imageList[row].irisVideoURL else { return }
                     watchface.resources?.files[irisVideoURL] = movie
                     watchface.resources?.images.imageList[row].isIris = movie != nil
-                    watchface.resources?.images.imageList[row].irisDuration = 2.3
-                    watchface.resources?.images.imageList[row].irisStillDisplayTime = 1.4
+                    watchface.resources?.images.imageList[row].irisDuration = duration ?? 3.0
+                    watchface.resources?.images.imageList[row].irisStillDisplayTime = (duration ?? 3.0) - 0.1
+                    // NOTE: 3 secs in 30fps is best for watchface resources that is cropped & created as watchface by iOS
                     // TODO: re-compress: should be less than 3 secs?
                     // TODO: update duration metadata
 

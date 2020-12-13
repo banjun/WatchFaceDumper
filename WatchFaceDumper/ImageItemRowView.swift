@@ -12,11 +12,17 @@ final class ImageItemRowView: NSTableRowView {
     }
     private let movieView = EditableAVPlayerView()
     var imageDidChange: ((NSImage?) -> Void)?
-    var movieDidChange: ((Data?) -> Void)?
+    var movieDidChange: (((data: Data, duration: Double?)?) -> Void)?
 
-    struct ImageItem {
+    struct ImageItem: Equatable {
+        static func == (lhs: ImageItemRowView.ImageItem, rhs: ImageItemRowView.ImageItem) -> Bool {
+            lhs.image?.tiffRepresentation == rhs.image?.tiffRepresentation
+                && lhs.movie?.data == rhs.movie?.data
+                && lhs.movie?.duration == rhs.movie?.duration
+        }
+        
         var image: NSImage?
-        var movie: Data?
+        var movie: (data: Data, duration: Double?)?
     }
 
     var item: ImageItem {
@@ -38,9 +44,9 @@ final class ImageItemRowView: NSTableRowView {
                 }
             },
             "movie": movieView ※ { movieView in
-                movieView.dataDidChange = { [weak self] data in
-                    self?.item.movie = data
-                    self?.movieDidChange?(data)
+                movieView.movieDidChange = { [weak self] in
+                    self?.item.movie = $0.map {($0.data, $0.duration)}
+                    self?.movieDidChange?(self?.item.movie)
                 }
             },
         ])
@@ -67,8 +73,8 @@ final class ImageItemRowView: NSTableRowView {
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: image.size.width / image.size.height)
         }
 
-        if movieView.data != item.movie {
-            movieView.data = item.movie
+        if movieView.data != item.movie?.data {
+            movieView.movie = item.movie.map {.init(data: $0.data, duration: $0.duration)}
         }
         movieView.controlsStyle = item.movie != nil ? .minimal : .none
     }

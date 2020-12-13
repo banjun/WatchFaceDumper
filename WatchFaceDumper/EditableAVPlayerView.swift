@@ -2,19 +2,46 @@ import AVKit
 
 
 final class EditableAVPlayerView: AVPlayerView, AVAssetResourceLoaderDelegate {
+    private var durationObservation: NSKeyValueObservation? {
+        didSet {
+            oldValue?.invalidate()
+        }
+    }
     private var asset: AVURLAsset? {
         didSet {
             asset?.resourceLoader.setDelegate(self, queue: .main)
-            player = asset.map {AVPlayer(playerItem: AVPlayerItem(asset: $0))}
+            let item = asset.map {AVPlayerItem(asset: $0)}
+            player = item.map {AVPlayer(playerItem: $0)}
+            durationObservation = item?.observe(\.duration) { [weak self] item, _ in
+                let duration = item.duration.seconds
+                guard let self = self, duration > 0, let data = self.data, duration != self.movie?.duration else { return }
+                self.movie = Movie(data: data, duration: duration)
+            }
+        }
+    }
+    var movie: Movie? {
+        didSet {
+            asset = AVURLAsset(url: URL(string: "data://")!)
+            self.movieDidChange?(movie)
         }
     }
     var data: Data? {
-        didSet {
+        get {movie?.data}
+        set {
             asset = AVURLAsset(url: URL(string: "data://")!)
-            dataDidChange?(data)
+            if let data = newValue {
+                let movie = Movie(data: data, duration: nil)
+                self.movie = movie
+            } else {
+                self.movie = nil
+            }
         }
     }
-    var dataDidChange: ((Data?) -> Void)?
+    struct Movie: Equatable {
+        var data: Data
+        var duration: Double?
+    }
+    var movieDidChange: ((Movie?) -> Void)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
