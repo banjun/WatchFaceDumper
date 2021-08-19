@@ -1,6 +1,6 @@
 # ※ikemen
 
-[![CI Status](http://img.shields.io/travis/banjun/※ikemen.svg?style=flat)](https://travis-ci.org/banjun/※ikemen)
+![CI](https://github.com/banjun/ikemen/workflows/CI/badge.svg)
 [![Version](https://img.shields.io/cocoapods/v/※ikemen.svg?style=flat)](http://cocoapods.org/pods/※ikemen)
 [![License](https://img.shields.io/cocoapods/l/※ikemen.svg?style=flat)](http://cocoapods.org/pods/※ikemen)
 [![Platform](https://img.shields.io/cocoapods/p/※ikemen.svg?style=flat)](http://cocoapods.org/pods/※ikemen)
