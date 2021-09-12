@@ -16,5 +16,5 @@ jobs:
     runs-on: macOS-11
     steps:
     - uses: actions/checkout@v2
-    - run: bundle install
-    - run: bundle exec fastlane gym --configuration Debug --skip_archive --scheme 'WatchFaceDumper'
+    - run: gem install fastlane
+    - run: fastlane gym --configuration Debug --skip_archive --scheme 'WatchFaceDumper'
