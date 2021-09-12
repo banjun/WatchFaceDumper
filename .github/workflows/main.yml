@@ -7,8 +7,14 @@ on:
 
 jobs:
   podspec:
-    runs-on: macOS-latest
+    runs-on: macOS-11
     steps:
     - uses: actions/checkout@v2
     - run: bundle install
     - run: bundle exec pod lib lint
+  build_mac:
+    runs-on: macOS-11
+    steps:
+    - uses: actions/checkout@v2
+    - run: bundle install
+    - run: bundle exec fastlane gym --configuration Debug --skip_archive --scheme 'WatchFaceDumper'
