@@ -6,6 +6,20 @@
 	objectVersion = 51;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		EA0BD72026F236EA00E4AF57 /* podspec */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = EA0BD72126F236EA00E4AF57 /* Build configuration list for PBXAggregateTarget "podspec" */;
+			buildPhases = (
+				EA0BD72426F236EE00E4AF57 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = podspec;
+			productName = podspec;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		AC51E52AB348334BC5955DAA /* Pods_WatchFaceDumper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54880CF96D784246956151A8 /* Pods_WatchFaceDumper.framework */; };
 		EA23D87F24FFF39F009A80D4 /* Watchface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA23D87E24FFF39F009A80D4 /* Watchface.swift */; };
@@ -193,6 +207,9 @@
 				LastSwiftUpdateCheck = 1200;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					EA0BD72026F236EA00E4AF57 = {
+						CreatedOnToolsVersion = 13.0;
+					};
 					EA4D31B524FFE37100104A33 = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -212,6 +229,7 @@
 			projectRoot = "";
 			targets = (
 				EA4D31B524FFE37100104A33 /* WatchFaceDumper */,
+				EA0BD72026F236EA00E4AF57 /* podspec */,
 			);
 		};
 /* End PBXProject section */
@@ -268,6 +286,23 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EA0BD72426F236EE00E4AF57 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -ex\n\nif [[ -n $CI ]]; then\n    gem install --user-install bundler\n    bundle config set --local path .bundle\n    bundle install\nfi\nbundle exec pod lib lint\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -311,6 +346,24 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		EA0BD72226F236EA00E4AF57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FPZK4WRGW7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EA0BD72326F236EA00E4AF57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FPZK4WRGW7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		EA4D31C624FFE37200104A33 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -436,6 +489,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FPZK4WRGW7;
 				INFOPLIST_FILE = WatchFaceDumper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -457,6 +511,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FPZK4WRGW7;
 				INFOPLIST_FILE = WatchFaceDumper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -471,6 +526,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		EA0BD72126F236EA00E4AF57 /* Build configuration list for PBXAggregateTarget "podspec" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA0BD72226F236EA00E4AF57 /* Debug */,
+				EA0BD72326F236EA00E4AF57 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EA4D31B124FFE37100104A33 /* Build configuration list for PBXProject "WatchFaceDumper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
