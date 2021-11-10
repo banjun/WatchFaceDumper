@@ -4,16 +4,21 @@ extension Watchface {
     public struct Face: Codable {
         public var version: Int = 4
         public var face_type: FaceType
+        /// non-nil when face type = bundle
+        public var bundle_id: BundleID?
         /// infograph: nil
         public var resource_directory: Bool? = true
         public var customization: Customization
         public var complications: Complications?
+        /// unknown values
+        public var argon: Argon?
 
         private enum CodingKeys: String, CodingKey {
             case version
             case customization
             case complications
             case face_type = "face type"
+            case bundle_id = "bundle id"
             case resource_directory = "resource directory"
         }
 
@@ -24,6 +29,12 @@ extension Watchface {
             case kaleidoscope
             /// aka infograph
             case whistler_analog = "whistler-analog"
+            /// portrait (has bundle id)
+            case bundle
+        }
+
+        public enum BundleID: String, Codable {
+            case comAppleNTKUltraCubeFaceBundle = "com.apple.NTKUltraCubeFaceBundle"
         }
 
         public struct Customization: Codable {
@@ -121,12 +132,26 @@ extension Watchface {
             }
         }
 
-        public init(version: Int = 4, face_type: FaceType, resource_directory: Bool? = true, customization: Customization, complications: Complications? = nil) {
+        public struct Argon {
+            /// unknown base64. (possibly constant value)
+            public var k: String?
+            /// unknown {hash}.aea. (possibly constant value)
+            public var n: String?
+
+            public init(k: String? = nil, n: String? = nil) {
+                self.k = k
+                self.n = n
+            }
+        }
+
+        public init(version: Int = 4, face_type: FaceType, bundle_id: BundleID? = nil, resource_directory: Bool? = true, customization: Customization, complications: Complications? = nil, argon: Argon? = nil) {
             self.version = version
             self.face_type = face_type
+            self.bundle_id = bundle_id
             self.resource_directory = resource_directory
             self.customization = customization
             self.complications = complications
+            self.argon = argon
         }
     }
 }
