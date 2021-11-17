@@ -40,11 +40,11 @@ extension Watchface {
         public struct Customization: Codable {
             /// photo: "none"
             public var color: String?
-            /// photo: "custom", kaleidoscope: "asset custom", infograph: nil
+            /// photo: "custom", kaleidoscope: "asset custom", infograph: nil, UltraCube: "custom"
             public var content: String?
             /// "top"
             public var position: String?
-            /// kaleidoscope: "radial"
+            /// kaleidoscope: "radial", UltraCulbe: "style 2"
             public var style: String?
 
             public init(color: String? = nil, content: String? = nil, position: String? = nil, style: String? = nil) {
@@ -67,6 +67,7 @@ extension Watchface {
             public var slot_2: Item?
             public var slot_3: Item?
             public var bezel: Item?
+            public var date: Item?
 
             private enum CodingKeys: String, CodingKey {
                 case top, bottom
@@ -79,6 +80,7 @@ extension Watchface {
                 case slot_2 = "slot 2"
                 case slot_3 = "slot 3"
                 case bezel
+                case date
             }
 
             public struct Item: Codable {
@@ -87,10 +89,13 @@ extension Watchface {
                 /// "com.apple.shortcuts.watch"
                 public var `extension`: String?
                 public var complication_descriptor: ComplicationDescriptor?
+                /// "weekday and day"
+                public var date_style: String?
 
                 private enum CodingKeys: String, CodingKey {
                     case app, `extension`
                     case complication_descriptor = "complication descriptor"
+                    case date_style = "date style"
                 }
 
                 public struct ComplicationDescriptor: Codable {
@@ -109,26 +114,6 @@ extension Watchface {
                         self.userActivity = userActivity
                     }
                 }
-
-                public init(app: String, `extension`: String? = nil, complication_descriptor: ComplicationDescriptor? = nil) {
-                    self.app = app
-                    self.extension = `extension`
-                    self.complication_descriptor = complication_descriptor
-                }
-            }
-
-            public init(top: Item? = nil, bottom: Item? = nil, top_left: Item? = nil, top_right: Item? = nil, bottom_left: Item? = nil, bottom_center: Item? = nil, bottom_right: Item? = nil, slot_1: Item? = nil, slot_2: Item? = nil, slot_3: Item? = nil, bezel: Item? = nil) {
-                self.top = top
-                self.bottom = bottom
-                self.top_left = top_left
-                self.top_right = top_right
-                self.bottom_left = bottom_left
-                self.bottom_center = bottom_center
-                self.bottom_right = bottom_right
-                self.slot_1 = slot_1
-                self.slot_2 = slot_2
-                self.slot_3 = slot_3
-                self.bezel = bezel
             }
         }
 

@@ -50,12 +50,23 @@ extension Watchface {
                 /// photos has some, kaleidoscope has none
                 public var rightAnalysis: Analysis?
 
-                public var imageURL: String
+                /// photos has some, UltraCube has none
+                public var imageURL: String?
+                /// photos has none, UltraCube has some
+                public var baseImageURL: String?
+                /// photos has none, UltraCube may have some paired with backgroundImageURL
+                public var maskImageURL: String?
+                /// photos has none, UltraCube may have some paired with maskImageURL
+                public var backgroundImageURL: String?
 
-                public var irisDuration: Double = 3
-                public var irisStillDisplayTime: Double = 0
-                public var irisVideoURL: String
-                public var isIris: Bool = true
+                /// photos has some
+                public var irisDuration: Double? = 3
+                /// photos has some
+                public var irisStillDisplayTime: Double? = 0
+                /// photos has some
+                public var irisVideoURL: String?
+                /// photos has some
+                public var isIris: Bool? = true
 
                 /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
                 public var localIdentifier: String
@@ -70,27 +81,21 @@ extension Watchface {
                 public var originalCropX: Double
                 public var originalCropY: Double
 
-                public init(topAnalysis: Analysis? = nil, leftAnalysis: Analysis? = nil, bottomAnalysis: Analysis? = nil, rightAnalysis: Analysis? = nil, imageURL: String, irisDuration: Double = 3, irisStillDisplayTime: Double = 0, irisVideoURL: String, isIris: Bool = true, localIdentifier: String, modificationDate: Date? = Date(), cropH: Double = 480, cropW: Double = 384, cropX: Double = 0, cropY: Double = 0, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double) {
-                    self.topAnalysis = topAnalysis
-                    self.leftAnalysis = leftAnalysis
-                    self.bottomAnalysis = bottomAnalysis
-                    self.rightAnalysis = rightAnalysis
-                    self.imageURL = imageURL
-                    self.irisDuration = irisDuration
-                    self.irisStillDisplayTime = irisStillDisplayTime
-                    self.irisVideoURL = irisVideoURL
-                    self.isIris = isIris
-                    self.localIdentifier = localIdentifier
-                    self.modificationDate = modificationDate
-                    self.cropH = cropH
-                    self.cropW = cropW
-                    self.cropX = cropX
-                    self.cropY = cropY
-                    self.originalCropH = originalCropH
-                    self.originalCropW = originalCropW
-                    self.originalCropX = originalCropX
-                    self.originalCropY = originalCropY
-                }
+                /// UltraCube has some
+                public var baseImageZorder: Int? = 0
+                /// UltraCube has some
+                public var maskedImageZorder: Int? = 1
+                /// UltraCube has some
+                public var timeElementImageZorder: Int? = 2
+                /// UltraCube has some. 0-1?
+                public var imageAOTBrightness: Double? = 0.5
+                /// UltraCube has some. constant false?
+                public var parallaxFlat: Bool? = false
+                /// UltraCube has some. constant 1.075?
+                public var parallaxScale: Double? = 1.075
+                /// UltraCube has some
+                public var userAdjusted: Bool? = false
+
             }
 
             public init(imageList: [Item], version: Int = 1) {

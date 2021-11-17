@@ -270,8 +270,13 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 originalCropX: 0,
                 originalCropY: 0)
             watchface.resources?.images.imageList.append(item)
-            watchface.resources?.files[item.imageURL] = imageData
-            watchface.resources?.files[item.irisVideoURL] = movieData
+            // TODO: add resource URLs for UltraCube such as baseImage
+            if let u = item.imageURL {
+                watchface.resources?.files[u] = imageData
+            }
+            if let u = item.irisVideoURL {
+                watchface.resources?.files[u] = movieData
+            }
         }
         reloadDocument()
     }
@@ -280,7 +285,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         guard case 0..<imageItems.count = imageListTableView.selectedRow else { return }
         document.watchface = document.watchface ※ { watchface in
             guard let removed = watchface.resources?.images.imageList.remove(at: imageListTableView.selectedRow) else { return }
-            [removed.imageURL, removed.irisVideoURL].forEach {
+            [removed.imageURL, removed.irisVideoURL].compactMap {$0}.forEach {
                 watchface.resources?.files.removeValue(forKey: $0)
             }
         }
