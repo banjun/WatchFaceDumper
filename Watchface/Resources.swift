@@ -6,7 +6,28 @@ extension Watchface {
         /// filename -> content
         public var files: [String: Data]
 
-        public struct Metadata: Codable {
+        public enum Metadata: Codable {
+            /// photos or kaleidoscope (can be separated into cases...)
+            case photos(PhotosV1)
+            /// UltraCube aka Portrait
+            case ultraCube(UltraCubeV2)
+
+            public init(from decoder: Decoder) throws {
+                self = try (try? PhotosV1(from: decoder)).map(Self.photos)
+                ?? (try? UltraCubeV2(from: decoder)).map(Self.ultraCube)
+                // generate an exception as photos
+                ?? Self.photos(PhotosV1(from: decoder))
+            }
+
+            public func encode(to encoder: Encoder) throws {
+                switch self {
+                case .photos(let v): try v.encode(to: encoder)
+                case .ultraCube(let v): try v.encode(to: encoder)
+                }
+            }
+        }
+
+        public struct PhotosV1: Codable {
             public var imageList: [Item]
             public var version: Int = 1
 
@@ -52,12 +73,6 @@ extension Watchface {
 
                 /// photos has some, UltraCube has none
                 public var imageURL: String?
-                /// photos has none, UltraCube has some
-                public var baseImageURL: String?
-                /// photos has none, UltraCube may have some paired with backgroundImageURL
-                public var maskImageURL: String?
-                /// photos has none, UltraCube may have some paired with maskImageURL
-                public var backgroundImageURL: String?
 
                 /// photos has some
                 public var irisDuration: Double? = 3
@@ -81,32 +96,45 @@ extension Watchface {
                 public var originalCropX: Double
                 public var originalCropY: Double
 
-                /// UltraCube has some
-                public var baseImageZorder: Int? = 0
-                /// UltraCube has some
-                public var maskedImageZorder: Int? = 1
-                /// UltraCube has some
-                public var timeElementImageZorder: Int? = 2
-                /// UltraCube has some. 0-1?
-                public var imageAOTBrightness: Double? = 0.5
-                /// UltraCube has some. constant false?
-                public var parallaxFlat: Bool? = false
-                /// UltraCube has some. constant 1.075?
-                public var parallaxScale: Double? = 1.075
-                /// UltraCube has some
-                public var userAdjusted: Bool? = false
-
-            }
-
-            public init(imageList: [Item], version: Int = 1) {
-                self.imageList = imageList
-                self.version = version
             }
         }
 
-        public init(images: Metadata, files: [String: Data]) {
-            self.images = images
-            self.files = files
+        public struct UltraCubeV2: Codable {
+            public var imageList: [Item]
+            public var version: Int = 2
+
+            public struct Item: Codable {
+                public var baseImageURL: String
+                /// paired with backgroundImageURL. nil for some photos
+                public var maskImageURL: String?
+                /// paired with maskImageURL. nil for some photos
+                public var backgroundImageURL: String?
+
+                /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
+                public var localIdentifier: String
+                public var modificationDate: Date? = Date()
+
+                public var cropH: Double = 480
+                public var cropW: Double = 384
+                public var cropX: Double = 0
+                public var cropY: Double = 0
+                public var originalCropH: Double
+                public var originalCropW: Double
+                public var originalCropX: Double
+                public var originalCropY: Double
+
+                public var baseImageZorder: Int = 0
+                public var maskedImageZorder: Int = 1
+                public var timeElementImageZorder: Int = 2
+                /// 0-1?
+                public var imageAOTBrightness: Double = 0.5
+                /// constant false?
+                public var parallaxFlat: Bool = false
+                /// constant 1.075?
+                public var parallaxScale: Double = 1.075
+                public var userAdjusted: Bool? = false
+
+            }
         }
     }
 }

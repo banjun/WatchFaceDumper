@@ -19,58 +19,15 @@ public struct PortraitWatchface {
     }
 
     public struct Resources {
+        public typealias Metadata = Watchface.Resources.UltraCubeV2
         public var images: Metadata
         /// filename -> content
         public var files: [String: Data]
-
-        public struct Metadata: Codable {
-            public var imageList: [Item]
-            public var version: Int = 1
-
-            public struct Item: Codable {
-                /// UltraCube has some
-                public var baseImageURL: String
-                /// UltraCube may have some paired with backgroundImageURL
-                public var maskImageURL: String?
-                /// UltraCube may have some paired with maskImageURL
-                public var backgroundImageURL: String?
-
-                /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
-                public var localIdentifier: String
-                public var modificationDate: Date? = Date()
-
-                public var originalCropH: Double
-                public var originalCropW: Double
-                public var originalCropX: Double
-                public var originalCropY: Double
-
-                /// UltraCube has some
-                public var baseImageZorder: Int = 0
-                /// UltraCube has some
-                public var maskedImageZorder: Int = 1
-                /// UltraCube has some
-                public var timeElementImageZorder: Int = 2
-                /// UltraCube has some. 0-1?
-                public var imageAOTBrightness: Double = 0.5
-                /// UltraCube has some. constant false?
-                public var parallaxFlat: Bool = false
-                /// UltraCube has some. constant 1.075?
-                public var parallaxScale: Double = 1.075
-                /// UltraCube has some
-                public var userAdjusted: Bool = false
-            }
-
-            public init(imageList: [Item], version: Int = 1) {
-                self.imageList = imageList
-                self.version = version
-            }
-        }
 
         public init(images: Metadata, files: [String: Data]) {
             self.images = images
             self.files = files
         }
-
     }
 
     public struct Complication {
@@ -119,40 +76,31 @@ extension PortraitWatchface {
 }
 extension PortraitWatchface.Resources.Metadata {
     public init?(images: Watchface.Resources.Metadata) {
-        let imageList = images.imageList.compactMap { item -> Item? in
-            guard let baseImageURL = item.baseImageURL,
-                  let baseImageZorder = item.baseImageZorder,
-                  let maskedImageZorder = item.maskedImageZorder,
-                  let timeElementImageZorder = item.timeElementImageZorder,
-                  let imageAOTBrightness = item.imageAOTBrightness,
-                  let parallaxFlat = item.parallaxFlat,
-                  let parallaxScale = item.parallaxScale,
-                  let userAdjusted = item.userAdjusted else { return nil }
-            return Item(
-                baseImageURL: baseImageURL,
-                maskImageURL: item.maskImageURL,
-                backgroundImageURL: item.backgroundImageURL,
-                localIdentifier: item.localIdentifier,
-                modificationDate: item.modificationDate,
-                originalCropH: item.originalCropH,
-                originalCropW: item.originalCropW,
-                originalCropX: item.originalCropX,
-                originalCropY: item.originalCropY,
-                baseImageZorder: baseImageZorder,
-                maskedImageZorder: maskedImageZorder,
-                timeElementImageZorder: timeElementImageZorder,
-                imageAOTBrightness: imageAOTBrightness,
-                parallaxFlat: parallaxFlat,
-                parallaxScale: parallaxScale,
-                userAdjusted: userAdjusted)
-        }
-        guard imageList.count == images.imageList.count else { return nil }
+        guard case .ultraCube(let metadata) = images else { return nil }
         self.init(
-            imageList: imageList,
-            version: images.version)
+            imageList: metadata.imageList.map {
+                Item(
+                    baseImageURL: $0.baseImageURL,
+                    maskImageURL: $0.maskImageURL,
+                    backgroundImageURL: $0.backgroundImageURL,
+                    localIdentifier: $0.localIdentifier,
+                    modificationDate: $0.modificationDate,
+                    originalCropH: $0.originalCropH,
+                    originalCropW: $0.originalCropW,
+                    originalCropX: $0.originalCropX,
+                    originalCropY: $0.originalCropY,
+                    baseImageZorder: $0.baseImageZorder,
+                    maskedImageZorder: $0.maskedImageZorder,
+                    timeElementImageZorder: $0.timeElementImageZorder,
+                    imageAOTBrightness: $0.imageAOTBrightness,
+                    parallaxFlat: $0.parallaxFlat,
+                    parallaxScale: $0.parallaxScale,
+                    userAdjusted: $0.userAdjusted)
+            },
+            version: metadata.version)
     }
 }
 
 extension Watchface {
-    
+    // TODO
 }

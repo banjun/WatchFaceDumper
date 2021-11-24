@@ -11,8 +11,13 @@ final class ImageListOutlineViewModel: NSObject, NSOutlineViewDelegate, NSOutlin
     }
 
     func setWatchface(_ watchface: Watchface) {
-        imageListPropertyList = (try? PropertyListEncoder().encode(watchface.resources?.images.imageList))
-            .flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)} as? [Any]
+        let imageList: Data?
+        switch watchface.resources?.images {
+        case .photos(let v)?: imageList = try? PropertyListEncoder().encode(v.imageList)
+        case .ultraCube(let v)?: imageList = try? PropertyListEncoder().encode(v.imageList)
+        case nil: imageList = nil
+        }
+        imageListPropertyList = imageList.flatMap {try? PropertyListSerialization.propertyList(from: $0, options: [], format: nil)} as? [Any]
     }
 
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
