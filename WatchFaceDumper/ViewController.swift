@@ -173,9 +173,13 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         metadataViewModel.setWatchface(watchface)
 
         imageItems = watchface.resources.map { resources in
-            resources.images.imageList
-                .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
-                .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1.map {($0, nil)})}
+            switch resources.images {
+            case .photos(let v): return v.imageList
+                    .map {(resources.files[$0.imageURL], resources.files[$0.irisVideoURL])}
+                    .map {ImageItem(image: $0.0.flatMap {NSImage(data: $0)}, movie: $0.1.map {($0, nil)})}
+            case .ultraCube(let v): return v.imageList
+                    .map {ImageItem(image: resources.files[$0.baseImageURL].flatMap {NSImage(data: $0)}, movie: nil)} // TODO: back, mask
+            }
         } ?? []
 
         imageListOutlineViewModel.setWatchface(watchface)
@@ -199,18 +203,39 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             $0.imageDidChange = { [weak self] image in
                 guard let self = self else { return }
                 self.document.watchface = self.document.watchface ※ { watchface in
-                    guard let imageURL = watchface.resources?.images.imageList[row].imageURL else { return }
+                    guard let resources = watchface.resources else { return }
                     let jpeg = image?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
-                    watchface.resources?.files[imageURL] = jpeg
-                    // TODO: resize
-                    watchface.resources?.images.imageList[row].cropX = 0
-                    watchface.resources?.images.imageList[row].cropY = 0
-                    watchface.resources?.images.imageList[row].cropW = Double(image?.size.width ?? 0)
-                    watchface.resources?.images.imageList[row].cropH = Double(image?.size.height ?? 0)
-                    watchface.resources?.images.imageList[row].originalCropX = 0
-                    watchface.resources?.images.imageList[row].originalCropY = 0
-                    watchface.resources?.images.imageList[row].originalCropW = Double(image?.size.width ?? 0)
-                    watchface.resources?.images.imageList[row].originalCropH = Double(image?.size.height ?? 0)
+                    watchface.resources = resources ※ { resources in
+                        switch resources.images {
+                        case .photos(let v):
+                            resources.files[v.imageList[row].imageURL] = jpeg
+                            resources.images = .photos(v ※ {
+                                // TODO: resize
+                                $0.imageList[row].cropX = 0
+                                $0.imageList[row].cropY = 0
+                                $0.imageList[row].cropW = Double(image?.size.width ?? 0)
+                                $0.imageList[row].cropH = Double(image?.size.height ?? 0)
+                                $0.imageList[row].originalCropX = 0
+                                $0.imageList[row].originalCropY = 0
+                                $0.imageList[row].originalCropW = Double(image?.size.width ?? 0)
+                                $0.imageList[row].originalCropH = Double(image?.size.height ?? 0)
+                            })
+                        case .ultraCube(let v):
+                            // TODO: back, mask
+                            resources.files[v.imageList[row].baseImageURL] = jpeg
+                            resources.images = .ultraCube(v ※ {
+                                // TODO: resize
+                                $0.imageList[row].cropX = 0
+                                $0.imageList[row].cropY = 0
+                                $0.imageList[row].cropW = Double(image?.size.width ?? 0)
+                                $0.imageList[row].cropH = Double(image?.size.height ?? 0)
+                                $0.imageList[row].originalCropX = 0
+                                $0.imageList[row].originalCropY = 0
+                                $0.imageList[row].originalCropW = Double(image?.size.width ?? 0)
+                                $0.imageList[row].originalCropH = Double(image?.size.height ?? 0)
+                            })
+                        }
+                    }
                 }
                 self.reloadDocument()
             }
@@ -218,15 +243,20 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 guard let self = self else { return }
                 let (movie, duration) = ($0?.data, $0?.duration.flatMap {$0 > 0 ? $0 : nil})
                 self.document.watchface = self.document.watchface ※ { watchface in
-                    guard let irisVideoURL = watchface.resources?.images.imageList[row].irisVideoURL else { return }
-                    watchface.resources?.files[irisVideoURL] = movie
-                    watchface.resources?.images.imageList[row].isIris = movie != nil
-                    watchface.resources?.images.imageList[row].irisDuration = duration ?? 3.0
-                    watchface.resources?.images.imageList[row].irisStillDisplayTime = (duration ?? 3.0) - 0.1
-                    // NOTE: 3 secs in 30fps is best for watchface resources that is cropped & created as watchface by iOS
-                    // TODO: re-compress: should be less than 3 secs?
-                    // TODO: update duration metadata
-
+                    switch watchface.resources?.images {
+                    case .photos(let v):
+                        watchface.resources?.files[v.imageList[row].irisVideoURL] = movie
+                        watchface.resources?.images = .photos(v ※ {
+                            $0.imageList[row].isIris = movie != nil
+                            $0.imageList[row].irisDuration = duration ?? 3.0
+                            $0.imageList[row].irisStillDisplayTime = (duration ?? 3.0) - 0.1
+                            // NOTE: 3 secs in 30fps is best for watchface resources that is cropped & created as watchface by iOS
+                            // TODO: re-compress: should be less than 3 secs?
+                            // TODO: update duration metadata
+                        })
+                    case .ultraCube?, nil:
+                        break
+                    }
                 }
                 self.reloadDocument()
             }
@@ -247,35 +277,61 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
             let imageData: Data? = Data()
             let movieData: Data? = nil
 
-            let filenameBase = UUID().uuidString
-
-            let item = Watchface.Resources.Metadata.Item(
-                topAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
-                leftAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
-                bottomAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
-                rightAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
-                imageURL: "\(filenameBase).jpg",
-                irisDuration: 0,
-                irisStillDisplayTime: 0,
-                irisVideoURL: "\(filenameBase).mov",
-                isIris: movieData != nil,
-                localIdentifier: "",
-                modificationDate: Date(),
-                cropH: 0,
-                cropW: 0,
-                cropX: 0,
-                cropY: 0,
-                originalCropH: 0,
-                originalCropW: 0,
-                originalCropX: 0,
-                originalCropY: 0)
-            watchface.resources?.images.imageList.append(item)
-            // TODO: add resource URLs for UltraCube such as baseImage
-            if let u = item.imageURL {
-                watchface.resources?.files[u] = imageData
-            }
-            if let u = item.irisVideoURL {
-                watchface.resources?.files[u] = movieData
+            switch watchface.resources?.images {
+            case .photos(let v)?:
+                let filenameBase = UUID().uuidString
+                let item = Watchface.Resources.PhotosV1.Item(
+                    topAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                    leftAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                    bottomAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                    rightAnalysis: .init(bgBrightness: 0, bgHue: 0, bgSaturation: 0, coloredText: false, complexBackground: false, shadowBrightness: 0, shadowHue: 0, shadowSaturation: 0, textBrightness: 0, textHue: 0, textSaturation: 0),
+                    imageURL: "\(filenameBase).jpg",
+                    irisDuration: 0,
+                    irisStillDisplayTime: 0,
+                    irisVideoURL: "\(filenameBase).mov",
+                    isIris: movieData != nil,
+                    localIdentifier: "",
+                    modificationDate: Date(),
+                    cropH: 0,
+                    cropW: 0,
+                    cropX: 0,
+                    cropY: 0,
+                    originalCropH: 0,
+                    originalCropW: 0,
+                    originalCropX: 0,
+                    originalCropY: 0)
+                watchface.resources?.images = .photos(v ※ {$0.imageList.append(item)})
+                watchface.resources?.files[item.imageURL] = imageData
+                watchface.resources?.files[item.irisVideoURL] = movieData
+            case .ultraCube(let v)?:
+                let filenameBase = UUID().uuidString
+                let item = Watchface.Resources.UltraCubeV2.Item(
+                    baseImageURL: "\(filenameBase).jpg",
+                    maskImageURL: nil,
+                    backgroundImageURL: nil,
+                    localIdentifier: "",
+                    modificationDate: Date(),
+                    cropH: 0,
+                    cropW: 0,
+                    cropX: 0,
+                    cropY: 0,
+                    originalCropH: 0,
+                    originalCropW: 0,
+                    originalCropX: 0,
+                    originalCropY: 0,
+                    baseImageZorder: 0,
+                    maskedImageZorder: 1,
+                    timeElementZorder: 2,
+                    timeElementUnitBaseline: 0.8035714285714286,
+                    timeElementUnitHeight: 0.2411167512690355,
+                    imageAOTBrightness: 0.5,
+                    parallaxFlat: false,
+                    parallaxScale: 1.075,
+                    userAdjusted: false)
+                watchface.resources?.images = .ultraCube(v ※ {$0.imageList.append(item)})
+                watchface.resources?.files[item.baseImageURL] = imageData
+            case nil:
+                break
             }
         }
         reloadDocument()
@@ -284,8 +340,22 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
     @IBAction func removeImage(_ sender: Any?) {
         guard case 0..<imageItems.count = imageListTableView.selectedRow else { return }
         document.watchface = document.watchface ※ { watchface in
-            guard let removed = watchface.resources?.images.imageList.remove(at: imageListTableView.selectedRow) else { return }
-            [removed.imageURL, removed.irisVideoURL].compactMap {$0}.forEach {
+            var removedURLs: [String] = []
+            switch watchface.resources?.images {
+            case .photos(let v)?:
+                watchface.resources?.images = .photos(v ※ {
+                    let removed = $0.imageList.remove(at: imageListTableView.selectedRow)
+                    removedURLs.append(contentsOf: [removed.imageURL, removed.irisVideoURL].compactMap {$0})
+                })
+            case .ultraCube(let v)?:
+                watchface.resources?.images = .ultraCube(v ※ {
+                    let removed = $0.imageList.remove(at: imageListTableView.selectedRow)
+                    removedURLs.append(contentsOf: [removed.baseImageURL, removed.backgroundImageURL, removed.maskImageURL].compactMap {$0})
+                })
+            case nil:
+                break
+            }
+            removedURLs.forEach {
                 watchface.resources?.files.removeValue(forKey: $0)
             }
         }

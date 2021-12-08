@@ -32,7 +32,18 @@ public extension Watchface {
                 throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Images.plist not found"))
             }
             let resources_metadata = try PropertyListDecoder().decode(Watchface.Resources.Metadata.self, from: resources_metadata_plist)
-            resources = Watchface.Resources(images: resources_metadata, files: resources_metadata.imageList.flatMap {[$0.imageURL, $0.irisVideoURL]}.reduce(into: [:]) {$0[$1] = resourcesDirectory[$1]?.regularFileContents}) // TODO: .pathfinders for kaleidoscope
+            resources = Watchface.Resources(
+                images: resources_metadata,
+                files: {
+                    switch resources_metadata {
+                    case .photos(let v): return v.imageList
+                            .flatMap {[$0.imageURL, $0.irisVideoURL].compactMap {$0}} // TODO: .pathfinders for kaleidoscope
+                            .reduce(into: [:]) {$0[$1] = resourcesDirectory[$1]?.regularFileContents}
+                    case .ultraCube(let v): return v.imageList
+                            .flatMap {[$0.baseImageURL, $0.backgroundImageURL, $0.maskImageURL].compactMap {$0}}
+                            .reduce(into: [:]) {$0[$1] = resourcesDirectory[$1]?.regularFileContents}
+                    }
+                }())
         } else {
             resources = nil
         }

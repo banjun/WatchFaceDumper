@@ -71,17 +71,12 @@ extension Watchface {
                 /// photos has some, kaleidoscope has none
                 public var rightAnalysis: Analysis?
 
-                /// photos has some, UltraCube has none
-                public var imageURL: String?
+                public var imageURL: String
 
-                /// photos has some
-                public var irisDuration: Double? = 3
-                /// photos has some
-                public var irisStillDisplayTime: Double? = 0
-                /// photos has some
-                public var irisVideoURL: String?
-                /// photos has some
-                public var isIris: Bool? = true
+                public var irisDuration: Double = 3
+                public var irisStillDisplayTime: Double = 0
+                public var irisVideoURL: String
+                public var isIris: Bool = true
 
                 /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
                 public var localIdentifier: String
@@ -114,10 +109,10 @@ extension Watchface {
                 public var localIdentifier: String
                 public var modificationDate: Date? = Date()
 
-                public var cropH: Double = 480
-                public var cropW: Double = 384
-                public var cropX: Double = 0
-                public var cropY: Double = 0
+                public var cropH: Double? = 480
+                public var cropW: Double? = 384
+                public var cropX: Double? = 0
+                public var cropY: Double? = 0
                 public var originalCropH: Double
                 public var originalCropW: Double
                 public var originalCropX: Double
@@ -125,7 +120,9 @@ extension Watchface {
 
                 public var baseImageZorder: Int = 0
                 public var maskedImageZorder: Int = 1
-                public var timeElementImageZorder: Int = 2
+                public var timeElementZorder: Int = 2
+                public var timeElementUnitBaseline: Double = 0.8035714285714286
+                public var timeElementUnitHeight: Double = 0.2411167512690355
                 /// 0-1?
                 public var imageAOTBrightness: Double = 0.5
                 /// constant false?

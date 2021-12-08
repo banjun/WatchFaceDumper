@@ -91,7 +91,7 @@ extension PortraitWatchface.Resources.Metadata {
                     originalCropY: $0.originalCropY,
                     baseImageZorder: $0.baseImageZorder,
                     maskedImageZorder: $0.maskedImageZorder,
-                    timeElementImageZorder: $0.timeElementImageZorder,
+                    timeElementZorder: $0.timeElementZorder,
                     imageAOTBrightness: $0.imageAOTBrightness,
                     parallaxFlat: $0.parallaxFlat,
                     parallaxScale: $0.parallaxScale,
