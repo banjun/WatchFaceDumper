@@ -20,7 +20,7 @@ final class ImageItemRowView: NSTableRowView {
                 && lhs.movie?.data == rhs.movie?.data
                 && lhs.movie?.duration == rhs.movie?.duration
         }
-        
+
         var image: NSImage?
         var movie: (data: Data, duration: Double?)?
     }
@@ -77,5 +77,52 @@ final class ImageItemRowView: NSTableRowView {
             movieView.movie = item.movie.map {.init(data: $0.data, duration: $0.duration)}
         }
         movieView.controlsStyle = item.movie != nil ? .minimal : .none
+    }
+}
+
+final class UltraCubeImageItemRowView: NSTableRowView {
+    private let baseImageView = EditableImageView()
+    private let backImageView = EditableImageView()
+    private let maskImageView = EditableImageView()
+
+    struct ImageItem: Equatable {
+        var baseImage: NSImage
+        var backImage: NSImage?
+        var maskImage: NSImage?
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.baseImage.tiffRepresentation == rhs.baseImage.tiffRepresentation
+            && lhs.backImage?.tiffRepresentation == rhs.backImage?.tiffRepresentation
+            && lhs.maskImage?.tiffRepresentation == rhs.maskImage?.tiffRepresentation
+        }
+    }
+
+    var item: ImageItem {
+        didSet {
+            reloadItem()
+        }
+    }
+
+    init(item: ImageItem) {
+        self.item = item
+        super.init(frame: .zero)
+
+        let autolayout = northLayoutFormat([:], [
+            "base": baseImageView,
+            "back": backImageView,
+            "mask": maskImageView])
+        autolayout("H:|-[base]-[back(base)]-[mask]-|")
+        autolayout("V:|-[base(240)]-|")
+        autolayout("V:|-[back(base)]-|")
+        autolayout("V:|-[back(mask)]-|")
+
+        reloadItem()
+    }
+
+    required init?(coder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+
+    private func reloadItem() {
+        baseImageView.image = item.baseImage
+        // TODO
     }
 }
