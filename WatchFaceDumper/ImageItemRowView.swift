@@ -81,17 +81,18 @@ final class ImageItemRowView: NSTableRowView {
 }
 
 final class UltraCubeImageItemRowView: NSTableRowView {
+    private let titleLabel = NSTextField(labelWithString: "")
     private let baseImageView = EditableImageView()
     private let backImageView = EditableImageView()
     private let maskImageView = EditableImageView()
 
     struct ImageItem: Equatable {
-        var baseImage: NSImage
+        var baseImage: NSImage?
         var backImage: NSImage?
         var maskImage: NSImage?
 
         static func == (lhs: Self, rhs: Self) -> Bool {
-            lhs.baseImage.tiffRepresentation == rhs.baseImage.tiffRepresentation
+            lhs.baseImage?.tiffRepresentation == rhs.baseImage?.tiffRepresentation
             && lhs.backImage?.tiffRepresentation == rhs.backImage?.tiffRepresentation
             && lhs.maskImage?.tiffRepresentation == rhs.maskImage?.tiffRepresentation
         }
@@ -108,13 +109,15 @@ final class UltraCubeImageItemRowView: NSTableRowView {
         super.init(frame: .zero)
 
         let autolayout = northLayoutFormat([:], [
+            "title": titleLabel,
             "base": baseImageView,
             "back": backImageView,
             "mask": maskImageView])
-        autolayout("H:|-[base]-[back(base)]-[mask]-|")
-        autolayout("V:|-[base(240)]-|")
-        autolayout("V:|-[back(base)]-|")
-        autolayout("V:|-[back(mask)]-|")
+        autolayout("H:|-[title]-|")
+        autolayout("H:|-[base]-[back(base)]-[mask(base)]-|")
+        autolayout("V:|-[title]-[base(240)]-|")
+        autolayout("V:|-[title]-[back(base)]-|")
+        autolayout("V:|-[title]-[mask(base)]-|")
 
         reloadItem()
     }
@@ -122,7 +125,12 @@ final class UltraCubeImageItemRowView: NSTableRowView {
     required init?(coder: NSCoder) {fatalError("init(coder:) has not been implemented")}
 
     private func reloadItem() {
+        titleLabel.stringValue = [
+            item.baseImage.map {"\(Int($0.size.width))×\(Int($0.size.height))"} ?? "no image (Portrait)",
+            (item.backImage != nil && item.maskImage != nil) ? "Portrait Photo" : "(Missing Portrait Support)"
+        ].joined(separator: ", ")
         baseImageView.image = item.baseImage
-        // TODO
+        backImageView.image = item.backImage
+        maskImageView.image = item.maskImage
     }
 }
