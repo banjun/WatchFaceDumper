@@ -12,14 +12,18 @@ extension Watchface {
         public var complications: Complications?
         /// unknown values
         public var argon: Argon?
+        /// UltraCulbe: "ultracube"
+        public var analytics_id: String?
 
         private enum CodingKeys: String, CodingKey {
             case version
             case customization
             case complications
+            case argon
             case face_type = "face type"
             case bundle_id = "bundle id"
             case resource_directory = "resource directory"
+            case analytics_id = "analytics id"
         }
 
         public enum FaceType: String, Codable {
@@ -44,14 +48,17 @@ extension Watchface {
             public var content: String?
             /// "top"
             public var position: String?
-            /// kaleidoscope: "radial", UltraCulbe: "style 2"
+            /// kaleidoscope: "radial"
             public var style: String?
+            /// UltraCulbe: "style 2"
+            public var typeface: String?
 
-            public init(color: String? = nil, content: String? = nil, position: String? = nil, style: String? = nil) {
+            public init(color: String? = nil, content: String? = nil, position: String? = nil, style: String? = nil, typeface: String? = nil) {
                 self.color = color
                 self.content = content
                 self.position = position
                 self.style = style
+                self.typeface = typeface
             }
         }
 
@@ -117,7 +124,7 @@ extension Watchface {
             }
         }
 
-        public struct Argon {
+        public struct Argon: Codable {
             /// unknown base64. (possibly constant value)
             public var k: String?
             /// unknown {hash}.aea. (possibly constant value)
