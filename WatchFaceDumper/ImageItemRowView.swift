@@ -1,5 +1,6 @@
 import AppKit
 import Ikemen
+import Combine
 
 final class ImageItemRowView: NSTableRowView {
     private let titleLabel = NSTextField(labelWithString: "")
@@ -98,7 +99,7 @@ final class UltraCubeImageItemRowView: NSTableRowView {
         }
     }
 
-    var item: ImageItem {
+    @Published var item: ImageItem {
         didSet {
             reloadItem()
         }
@@ -110,9 +111,9 @@ final class UltraCubeImageItemRowView: NSTableRowView {
 
         let autolayout = northLayoutFormat([:], [
             "title": titleLabel,
-            "base": baseImageView,
-            "back": backImageView,
-            "mask": maskImageView])
+            "base": baseImageView ※ {$0.imageDidChange = {[weak self] in self?.item.baseImage = $0}},
+            "back": backImageView ※ {$0.imageDidChange = {[weak self] in self?.item.backImage = $0}},
+            "mask": maskImageView ※ {$0.imageDidChange = {[weak self] in self?.item.maskImage = $0}}])
         autolayout("H:|-[title]-|")
         autolayout("H:|-[base]-[back(base)]-[mask(base)]-|")
         autolayout("V:|-[title]-[base(240)]-|")

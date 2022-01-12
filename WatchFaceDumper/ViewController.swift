@@ -2,6 +2,7 @@ import Cocoa
 import NorthLayout
 import Ikemen
 import AVKit
+import Combine
 
 final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSSplitViewDelegate {
     var document: Document {
@@ -92,6 +93,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         $0.maximumNumberOfLines = 0
         $0.setContentCompressionResistancePriority(.init(rawValue: 9), for: .horizontal)
     }
+
+    private var cancellables: Set<AnyCancellable> = []
 
     init(document: Document) {
         self.document = document
@@ -239,19 +242,8 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                                     $0.imageList[row].originalCropW = Double(image?.size.width ?? 0)
                                     $0.imageList[row].originalCropH = Double(image?.size.height ?? 0)
                                 })
-                            case .ultraCube(let v):
-                                resources.files[v.imageList[row].baseImageURL] = jpeg
-                                resources.images = .ultraCube(v ※ {
-                                    // TODO: resize
-                                    $0.imageList[row].cropX = 0
-                                    $0.imageList[row].cropY = 0
-                                    $0.imageList[row].cropW = Double(image?.size.width ?? 0)
-                                    $0.imageList[row].cropH = Double(image?.size.height ?? 0)
-                                    $0.imageList[row].originalCropX = 0
-                                    $0.imageList[row].originalCropY = 0
-                                    $0.imageList[row].originalCropW = Double(image?.size.width ?? 0)
-                                    $0.imageList[row].originalCropH = Double(image?.size.height ?? 0)
-                                })
+                            case .ultraCube:
+                                break
                             }
                         }
                     }
@@ -280,8 +272,38 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                 }
             }
         case .ultraCube(let items):
-            return UltraCubeImageItemRowView(item: items[row]) ※ { _ in
-                // TODO: apply editing
+            return UltraCubeImageItemRowView(item: items[row]) ※ {
+                $0.$item.scan((UltraCubeImageItemRowView.ImageItem?, UltraCubeImageItemRowView.ImageItem)?.none) {($0?.1, $1)}.compactMap {$0}.sink { old, new in
+                    let baseJpeg = new.baseImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    let backJpeg = new.backImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    let maskJpeg = new.maskImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    self.document.watchface = self.document.watchface ※ { watchface in
+                        switch watchface.resources?.images {
+                        case .ultraCube(let v):
+                            let backgroundImageURL: String? = v.imageList[row].backgroundImageURL ?? backJpeg.map {_ in "back_" + UUID().uuidString + ".jpeg"}
+                            let maskImageURL: String? = v.imageList[row].maskImageURL ?? maskJpeg.map {_ in "mask_" + UUID().uuidString + ".jpeg"}
+                            watchface.resources?.files[v.imageList[row].baseImageURL] = baseJpeg
+                            _ = backgroundImageURL.map {watchface.resources?.files[$0] = backJpeg}
+                            _ = maskImageURL.map {watchface.resources?.files[$0] = maskJpeg}
+                            watchface.resources?.images = .ultraCube(v ※ {
+                                // TODO: resize
+                                $0.imageList[row].cropX = 0
+                                $0.imageList[row].cropY = 0
+                                $0.imageList[row].cropW = Double(new.baseImage?.size.width ?? 0)
+                                $0.imageList[row].cropH = Double(new.baseImage?.size.height ?? 0)
+                                $0.imageList[row].originalCropX = 0
+                                $0.imageList[row].originalCropY = 0
+                                $0.imageList[row].originalCropW = Double(new.baseImage?.size.width ?? 0)
+                                $0.imageList[row].originalCropH = Double(new.baseImage?.size.height ?? 0)
+                                $0.imageList[row].backgroundImageURL = backgroundImageURL
+                                $0.imageList[row].maskImageURL = maskImageURL
+                            })
+                        case .photos?, nil:
+                            break
+                        }
+                    }
+                    // TODO: apply editing
+                }.store(in: &cancellables)
             }
         }
     }
