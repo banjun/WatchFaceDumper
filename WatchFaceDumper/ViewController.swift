@@ -3,6 +3,7 @@ import NorthLayout
 import Ikemen
 import AVKit
 import Combine
+import CoreGraphics
 
 final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSSplitViewDelegate {
     var document: Document {
@@ -274,17 +275,38 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         case .ultraCube(let items):
             return UltraCubeImageItemRowView(item: items[row]) ※ {
                 $0.$item.scan((UltraCubeImageItemRowView.ImageItem?, UltraCubeImageItemRowView.ImageItem)?.none) {($0?.1, $1)}.compactMap {$0}.sink { old, new in
-                    let baseJpeg = new.baseImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
-                    let backJpeg = new.backImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
-                    let maskJpeg = new.maskImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    let base = new.baseImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    let back = new.backImage?.tiffRepresentation.flatMap {NSBitmapImageRep(data: $0)}?.representation(using: .jpeg, properties: [.compressionFactor: 0.95])
+                    let maskPng = new.maskImage.flatMap { image -> Data? in
+                        let width = Int(image.size.width)
+                        let height = Int(image.size.height)
+                        guard let rep = NSBitmapImageRep(
+                                bitmapDataPlanes: nil,
+                                pixelsWide: width,
+                                pixelsHigh: height,
+                                bitsPerSample: 8,
+                                samplesPerPixel: 1,
+                                hasAlpha: false,
+                                isPlanar: false,
+                                colorSpaceName: .calibratedWhite,
+                                bytesPerRow: width,
+                                bitsPerPixel: 8) else { return nil }
+                        let contextImage = NSImage()
+                        contextImage.addRepresentation(rep)
+                        contextImage.lockFocus()
+                        image.draw(in: NSRect(origin: .zero, size: image.size))
+                        contextImage.unlockFocus()
+                        return rep.representation(using: .png, properties: [:]) // TODO
+                    }
                     self.document.watchface = self.document.watchface ※ { watchface in
                         switch watchface.resources?.images {
                         case .ultraCube(let v):
-                            let backgroundImageURL: String? = v.imageList[row].backgroundImageURL ?? backJpeg.map {_ in "back_" + UUID().uuidString + ".jpeg"}
-                            let maskImageURL: String? = v.imageList[row].maskImageURL ?? maskJpeg.map {_ in "mask_" + UUID().uuidString + ".jpeg"}
-                            watchface.resources?.files[v.imageList[row].baseImageURL] = baseJpeg
-                            _ = backgroundImageURL.map {watchface.resources?.files[$0] = backJpeg}
-                            _ = maskImageURL.map {watchface.resources?.files[$0] = maskJpeg}
+                            let baseImageURL = base.map {_ in "base_" + UUID().uuidString + ".jpeg"} ?? v.imageList[row].baseImageURL // TODO: heic
+                            let backgroundImageURL: String? = back.map {_ in "back_" + UUID().uuidString + ".jpeg"} // TODO: heic
+                            let maskImageURL: String? = maskPng.map {_ in "mask_" + UUID().uuidString + ".png"}
+                            watchface.resources?.files[baseImageURL] = base
+                            _ = backgroundImageURL.map {watchface.resources?.files[$0] = back}
+                            _ = maskImageURL.map {watchface.resources?.files[$0] = maskPng}
                             watchface.resources?.images = .ultraCube(v ※ {
                                 // TODO: resize
                                 $0.imageList[row].cropX = 0
@@ -295,6 +317,7 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                                 $0.imageList[row].originalCropY = 0
                                 $0.imageList[row].originalCropW = Double(new.baseImage?.size.width ?? 0)
                                 $0.imageList[row].originalCropH = Double(new.baseImage?.size.height ?? 0)
+                                $0.imageList[row].baseImageURL = baseImageURL
                                 $0.imageList[row].backgroundImageURL = backgroundImageURL
                                 $0.imageList[row].maskImageURL = maskImageURL
                             })
