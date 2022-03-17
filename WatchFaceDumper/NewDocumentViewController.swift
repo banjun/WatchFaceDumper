@@ -20,14 +20,14 @@ class NewDocumentViewController: NSViewController {
             "cancel": NSButton(title: "Cancel", target: self, action: #selector(cancel(_:))) ※ {
                 $0.keyEquivalent = "\u{1b}" // esc
             },
-            "open": NSButton(title: "Open", target: self, action: #selector(open(_:))) ※ {
+            "new": NSButton(title: "New", target: self, action: #selector(new(_:))) ※ {
                 $0.keyEquivalent = "\r"
             },])
         autolayout("H:|-p-[photos]-p-|")
         autolayout("H:|-p-[portrait]-p-|")
-        autolayout("H:|-(>=p)-[cancel(open)]-p-[open]-p-|")
+        autolayout("H:|-(>=p)-[cancel(new)]-p-[new]-p-|")
         autolayout("V:|-p-[photos]-[portrait]-(>=p)-[cancel]-p-|")
-        autolayout("V:[open]-p-|")
+        autolayout("V:[new]-p-|")
     }
 
     @IBAction func faceTypeChanged(_ sender: Any?) {
@@ -37,7 +37,7 @@ class NewDocumentViewController: NSViewController {
         view.window?.close()
     }
 
-    @IBAction func open(_ sender: Any?) {
+    @IBAction func new(_ sender: Any?) {
         if photosRadioButton.state == .on {
             openNewDocument(.init(photos: ()))
         } else if portraitRadioButton.state == .on {
