@@ -17,9 +17,7 @@ class Document: NSDocument {
     }
 
     convenience override init() {
-        // TODO: choose a watchface by ui
-//        self.init(photos: ())
-        self.init(portrait: ())
+        self.init(photos: ())
     }
 
     init(photos: Void) {

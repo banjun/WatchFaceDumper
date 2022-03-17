@@ -28,6 +28,7 @@
 		EA9D41352520BFD300838E68 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41342520BFD300838E68 /* Face.swift */; };
 		EA9D41382520C00800838E68 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41372520C00800838E68 /* Resources.swift */; };
 		EA9D41442520C11A00838E68 /* Watchface+FileWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */; };
+		EA9D8B7527E36AB5002917A9 /* NewDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9D8B7427E36AB5002917A9 /* NewDocumentViewController.swift */; };
 		EAA4F2912744F57900AE226B /* PortraitWatchface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA4F2902744F57900AE226B /* PortraitWatchface.swift */; };
 		EAD954F1256E7D5D004EBB02 /* EditableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD954F0256E7D5D004EBB02 /* EditableImageView.swift */; };
 /* End PBXBuildFile section */
@@ -58,6 +59,7 @@
 		EA9D41342520BFD300838E68 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
 		EA9D41372520C00800838E68 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		EA9D41432520C11A00838E68 /* Watchface+FileWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Watchface+FileWrapper.swift"; sourceTree = "<group>"; };
+		EA9D8B7427E36AB5002917A9 /* NewDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDocumentViewController.swift; sourceTree = "<group>"; };
 		EAA4F2902744F57900AE226B /* PortraitWatchface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortraitWatchface.swift; sourceTree = "<group>"; };
 		EAD954F0256E7D5D004EBB02 /* EditableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableImageView.swift; sourceTree = "<group>"; };
 		FE8E86D8C8D1F1C494C8E5E4 /* Pods-WatchFaceDumper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WatchFaceDumper.release.xcconfig"; path = "Target Support Files/Pods-WatchFaceDumper/Pods-WatchFaceDumper.release.xcconfig"; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				EA4D31B924FFE37100104A33 /* AppDelegate.swift */,
+				EA9D8B7427E36AB5002917A9 /* NewDocumentViewController.swift */,
 				EA4E96FF251267B5008D822B /* WindowController.swift */,
 				EA4D31BB24FFE37100104A33 /* ViewController.swift */,
 				EA4E96F82512642D008D822B /* ImageItemRowView.swift */,
@@ -283,6 +286,7 @@
 				EA9D41252520BE8900838E68 /* ComplicationTemplate.swift in Sources */,
 				EA4E96F92512642D008D822B /* ImageItemRowView.swift in Sources */,
 				EA9D41442520C11A00838E68 /* Watchface+FileWrapper.swift in Sources */,
+				EA9D8B7527E36AB5002917A9 /* NewDocumentViewController.swift in Sources */,
 				EA4E96FC25126454008D822B /* EditableAVPlayerView.swift in Sources */,
 				EA9D41382520C00800838E68 /* Resources.swift in Sources */,
 				EA4E9700251267B5008D822B /* WindowController.swift in Sources */,
