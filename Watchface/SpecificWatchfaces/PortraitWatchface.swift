@@ -100,7 +100,32 @@ extension PortraitWatchface.Resources.Metadata {
             version: metadata.version)
     }
 }
+extension Watchface.Resources.Metadata {
+    public init(images: PortraitWatchface.Resources.Metadata) {
+        self = .ultraCube(.init(imageList: images.imageList, version: images.version))
+    }
+}
 
 extension Watchface {
-    // TODO
+    public init(portraitWatchface portrait: PortraitWatchface) {
+        self.init(
+            metadata: .init(
+                complication_sample_templates: .init(bottom: portrait.bottomComplication?.template, date: portrait.dateComplication?.template),
+                complications_names:.init(
+                    bottom: portrait.bottomComplication?.name,
+                    date: portrait.dateComplication?.name),
+                complications_item_ids: .init(),
+                complications_bundle_ids: nil),
+            face: .init(
+                face_type: .bundle,
+                bundle_id: .comAppleNTKUltraCubeFaceBundle,
+                resource_directory: true,
+                customization: .init(color: nil, content: "custom", position: nil, style: portrait.style.rawValue, typeface: nil),
+                complications: .init(bottom: portrait.bottomComplication?.faceItem, date: portrait.dateComplication?.faceItem)),
+            snapshot: portrait.snapshot,
+            no_borders_snapshot: portrait.no_borders_snapshot,
+            resources: .init(images: .init(images: portrait.resources.images), files: portrait.resources.files),
+            complicationData: [portrait.bottomComplication?.data, portrait.dateComplication?.data].compactMap {$0}.isEmpty ? nil : .init(
+                bottom: portrait.bottomComplication?.data, date: portrait.dateComplication?.data))
+    }
 }

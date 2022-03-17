@@ -166,8 +166,13 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
         let watchface = document.watchface
         // NSLog("%@", "\(watchface)")
 
-        let faceType = watchface.face.face_type.rawValue
-        faceTypeLabel.stringValue = faceType.first!.uppercased() + faceType.dropFirst() + " watch face"
+        let faceTypeName: String = {
+            switch watchface.face.face_type {
+            case .bundle where watchface.face.bundle_id == .comAppleNTKUltraCubeFaceBundle: return "Portrait"
+            default: return watchface.face.face_type.rawValue
+            }
+        }()
+        faceTypeLabel.stringValue = faceTypeName.first!.uppercased() + faceTypeName.dropFirst() + " watch face"
 
         snapshot.image = NSImage(data: watchface.snapshot)
         snapshot.imageFrameStyle = snapshot.image.map {_ in .none} ?? .grayBezel
