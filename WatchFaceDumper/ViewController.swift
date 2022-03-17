@@ -284,25 +284,24 @@ final class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDa
                                 bitmapDataPlanes: nil,
                                 pixelsWide: width,
                                 pixelsHigh: height,
-                                bitsPerSample: 8,
+                                bitsPerSample: 8, // mask png should be 8-bit grayscale
                                 samplesPerPixel: 1,
-                                hasAlpha: false,
-                                isPlanar: false,
+                                hasAlpha: false, // mask png should not have alpha channel
+                                isPlanar: false, // suitable to be NSGraphicsContext.current
                                 colorSpaceName: .calibratedWhite,
                                 bytesPerRow: width,
                                 bitsPerPixel: 8) else { return nil }
-                        let contextImage = NSImage()
-                        contextImage.addRepresentation(rep)
-                        contextImage.lockFocus()
+                        NSGraphicsContext.saveGraphicsState()
+                        defer { NSGraphicsContext.restoreGraphicsState() }
+                        NSGraphicsContext.current = .init(bitmapImageRep: rep)
                         image.draw(in: NSRect(origin: .zero, size: image.size))
-                        contextImage.unlockFocus()
-                        return rep.representation(using: .png, properties: [:]) // TODO
+                        return rep.representation(using: .png, properties: [:])
                     }
                     self.document.watchface = self.document.watchface ※ { watchface in
                         switch watchface.resources?.images {
                         case .ultraCube(let v):
-                            let baseImageURL = base.map {_ in "base_" + UUID().uuidString + ".jpeg"} ?? v.imageList[row].baseImageURL // TODO: heic
-                            let backgroundImageURL: String? = back.map {_ in "back_" + UUID().uuidString + ".jpeg"} // TODO: heic
+                            let baseImageURL = base.map {_ in "base_" + UUID().uuidString + ".jpeg"} ?? v.imageList[row].baseImageURL // TODO?: heic
+                            let backgroundImageURL: String? = back.map {_ in "back_" + UUID().uuidString + ".jpeg"} // TODO?: heic
                             let maskImageURL: String? = maskPng.map {_ in "mask_" + UUID().uuidString + ".png"}
                             watchface.resources?.files[baseImageURL] = base
                             _ = backgroundImageURL.map {watchface.resources?.files[$0] = back}
