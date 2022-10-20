@@ -109,16 +109,22 @@ final class UltraCubeImageItemRowView: NSTableRowView {
         self.item = item
         super.init(frame: .zero)
 
+        let inpaintButton = NSButton(title: "Inpaint...", target: self, action: nil)
+
         let autolayout = northLayoutFormat([:], [
             "title": titleLabel,
             "base": baseImageView ※ {$0.imageDidChange = {[weak self] in self?.item.baseImage = $0}},
             "back": backImageView ※ {$0.imageDidChange = {[weak self] in self?.item.backImage = $0}},
-            "mask": maskImageView ※ {$0.imageDidChange = {[weak self] in self?.item.maskImage = $0}}])
+            "mask": maskImageView ※ {$0.imageDidChange = {[weak self] in self?.item.maskImage = $0}},
+            "inpaint": inpaintButton])
         autolayout("H:|-[title]-|")
         autolayout("H:|-[base]-[back(base)]-[mask(base)]-|")
         autolayout("V:|-[title]-[base(240)]-|")
         autolayout("V:|-[title]-[back(base)]-|")
         autolayout("V:|-[title]-[mask(base)]-|")
+        autolayout("V:[inpaint]-|")
+        inpaintButton.centerXAnchor.constraint(equalTo: backImageView.centerXAnchor).isActive = true
+        addSubview(inpaintButton, positioned: .above, relativeTo: nil)
 
         reloadItem()
     }
