@@ -3,7 +3,7 @@ import Foundation
 extension Watchface {
     public struct Metadata: Codable {
         public var version: Int = 2
-        // 38mm, 42mm?
+        // 38mm = 2, 42mm?, Ultra = 6
         public var device_size = 2
         public var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
         public var complications_names: ComplicationPositionDictionary<String>
