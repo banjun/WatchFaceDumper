@@ -301,7 +301,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -ex\n\nif [[ -n $CI ]]; then\n    arch -x86_64 gem install --user-install bundler\n    arch -x86_64 bundle config set --local path .bundle\n    arch -x86_64 bundle install\nfi\narch -x86_64 bundle exec pod lib lint\n";
+			shellScript = "set -ex\n\nif [[ -n $CI ]]; then\n    brew install cocoapods\nfi\npod lib lint\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
