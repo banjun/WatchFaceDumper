@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -288,6 +288,7 @@
 		};
 		EA0BD72426F236EE00E4AF57 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -301,7 +302,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -ex\n\nif [[ -n $CI ]]; then\n    brew install cocoapods\nfi\nwhich pod || brew install cocoapods\npod lib lint --allow-warnings # workaround for: - WARN  | url: There was a problem validating the URL\n";
+			shellScript = "set -ex\n\npod lib lint --allow-warnings # workaround for: - WARN  | url: There was a problem validating the URL\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
