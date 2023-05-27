@@ -302,7 +302,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -ex\n\nbundle exec pod lib lint --allow-warnings # workaround for: - WARN  | url: There was a problem validating the URL\n";
+			shellScript = "set -ex\n\nif $CI;\nthen\n    # pod lib lint already performed in ci_scripts/ci_post_clone.sh\nelse\n    bundle exec pod lib lint --private # workaround for: - WARN  | url: There was a problem validating the URL\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
