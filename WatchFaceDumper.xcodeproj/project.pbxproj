@@ -301,8 +301,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -ex\n\nif [[ $CI ]];\nthen\n    echo \"pod lib lint should already be performed in ci_scripts/ci_post_clone.sh\";\nelse\n    pod lib lint --private # workaround for: - WARN  | url: There was a problem validating the URL\nfi\n";
+			shellPath = /bin/zsh;
+			shellScript = "set -ex\n\nif [[ $CI ]];\nthen\n    echo \"pod lib lint should already be performed in ci_scripts/ci_pre_xcodebuild.sh\";\nelse\n    bundle exec pod lib lint --private # workaround for: - WARN  | url: There was a problem validating the URL\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
