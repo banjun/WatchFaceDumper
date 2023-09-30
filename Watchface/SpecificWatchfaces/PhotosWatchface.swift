@@ -28,7 +28,7 @@ public struct PhotosWatchface {
     }
 
     public enum Position: String {
-        case top, bototm
+        case top, bottom
     }
 
     public init(device_size: Int = 2, position: Position, snapshot: Data, no_borders_snapshot: Data, topComplication: Complication? = nil, bottomComplication: Complication? = nil, resources: Watchface.Resources) {

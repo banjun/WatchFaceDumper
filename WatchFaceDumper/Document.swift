@@ -3,9 +3,7 @@ import ZIPFoundation
 import Ikemen
 
 class Document: NSDocument {
-    var watchface: Watchface = .init(
-        photosWatchface: PhotosWatchface(
-            device_size: 2, position: .top, snapshot: Data(), no_borders_snapshot: Data(), topComplication: nil, bottomComplication: nil, resources: .init(images: .init(imageList: []), files: [:])))
+    var watchface: Watchface
     private var isLossyReading = false
     private var allowLossyAutosaving = false
 
@@ -16,6 +14,20 @@ class Document: NSDocument {
         if isLossyReading && !allowLossyAutosaving {
             throw NSError(domain: "WatchFaceDumper", code: 0, userInfo: [NSLocalizedDescriptionKey: "watchface file contains some additional information that cannot be handled in this app when saved"])
         }
+    }
+
+    convenience override init() {
+        self.init(photos: ())
+    }
+
+    init(photos: Void) {
+        watchface = .init(photosWatchface: PhotosWatchface(device_size: 2, position: .top, snapshot: Data(), no_borders_snapshot: Data(), topComplication: nil, bottomComplication: nil, resources: .init(images: .photos(.init(imageList: [])), files: [:])))
+        super.init()
+    }
+
+    init(portrait: Void) {
+        watchface = .init(portraitWatchface: PortraitWatchface(device_size: 2, style: .style3, snapshot: Data(), no_borders_snapshot: Data(), dateComplication: nil, bottomComplication: nil, resources: .init(images: .init(imageList: []), files: [:])))
+        super.init()
     }
 
     override func makeWindowControllers() {

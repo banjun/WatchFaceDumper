@@ -3,7 +3,7 @@ import Foundation
 extension Watchface {
     public struct Metadata: Codable {
         public var version: Int = 2
-        // 38mm, 42mm?
+        // 38mm = 2, 42mm?, Ultra = 6
         public var device_size = 2
         public var complication_sample_templates: ComplicationPositionDictionary<ComplicationTemplate>
         public var complications_names: ComplicationPositionDictionary<String>
@@ -23,6 +23,7 @@ extension Watchface {
             public var slot2: Value?
             public var slot3: Value?
             public var bezel: Value?
+            public var date: Value?
 
             public enum CodingKeys: String, CodingKey, CaseIterable {
                 case top, bottom
@@ -33,6 +34,7 @@ extension Watchface {
                 case bottom_right = "bottom-right"
                 case slot1, slot2, slot3
                 case bezel
+                case date
             }
 
             public subscript(_ key: CodingKeys) -> Value? {
@@ -49,6 +51,7 @@ extension Watchface {
                     case .slot2: return slot2
                     case .slot3: return slot3
                     case .bezel: return bezel
+                    case .date: return date
                     }
                 }
                 set {
@@ -64,22 +67,9 @@ extension Watchface {
                     case .slot2: slot2 = newValue
                     case .slot3: slot3 = newValue
                     case .bezel: bezel = newValue
+                    case .date: date = newValue
                     }
                 }
-            }
-
-            public init(top: Value? = nil, bottom: Value? = nil, top_left: Value? = nil, top_right: Value? = nil, bottom_left: Value? = nil, bottom_center: Value? = nil, bottom_right: Value? = nil, slot1: Value? = nil, slot2: Value? = nil, slot3: Value? = nil, bezel: Value? = nil) {
-                self.top = top
-                self.bottom = bottom
-                self.top_left = top_left
-                self.top_right = top_right
-                self.bottom_left = bottom_left
-                self.bottom_center = bottom_center
-                self.bottom_right = bottom_right
-                self.slot1 = slot1
-                self.slot2 = slot2
-                self.slot3 = slot3
-                self.bezel = bezel
             }
         }
 
