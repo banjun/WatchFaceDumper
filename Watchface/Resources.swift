@@ -168,7 +168,7 @@ extension Watchface {
                 public var parallaxScale: Double = 1.075
                 public var userAdjusted: Bool? = false
 
-                public init(baseImageURL: String, maskImageURL: String? = nil, backgroundImageURL: String? = nil, localIdentifier: String, modificationDate: Date? = nil, cropH: Double? = nil, cropW: Double? = nil, cropX: Double? = nil, cropY: Double? = nil, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double, baseImageZorder: Int, maskedImageZorder: Int, timeElementZorder: Int, timeElementUnitBaseline: Double, timeElementUnitHeight: Double, imageAOTBrightness: Double, parallaxFlat: Bool, parallaxScale: Double, userAdjusted: Bool? = nil) {
+                public init(baseImageURL: String, maskImageURL: String? = nil, backgroundImageURL: String? = nil, localIdentifier: String, modificationDate: Date? = nil, cropH: Double? = nil, cropW: Double? = nil, cropX: Double? = nil, cropY: Double? = nil, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double, baseImageZorder: Int, maskedImageZorder: Int, timeElementZorder: Int, timeElementUnitBaseline: Double = 0.8035714285714286, timeElementUnitHeight: Double = 0.2411167512690355, imageAOTBrightness: Double, parallaxFlat: Bool, parallaxScale: Double, userAdjusted: Bool? = nil) {
                     self.baseImageURL = baseImageURL
                     self.maskImageURL = maskImageURL
                     self.backgroundImageURL = backgroundImageURL
