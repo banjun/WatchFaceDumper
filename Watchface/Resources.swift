@@ -36,6 +36,11 @@ extension Watchface {
             public var imageList: [Item]
             public var version: Int = 1
 
+            public init(imageList: [Item] = [], version: Int = 1) {
+                self.imageList = imageList
+                self.version = version
+            }
+            
             public struct Item: Codable {
                 public struct Analysis: Codable {
                     public var bgBrightness: Double
@@ -96,6 +101,28 @@ extension Watchface {
                 public var originalCropX: Double
                 public var originalCropY: Double
 
+                
+                public init(topAnalysis: Analysis? = nil, leftAnalysis: Analysis? = nil, bottomAnalysis: Analysis? = nil, rightAnalysis: Analysis? = nil, imageURL: String, irisDuration: Double, irisStillDisplayTime: Double, irisVideoURL: String, isIris: Bool, localIdentifier: String, modificationDate: Date? = Date(), cropH: Double = 480, cropW: Double = 384, cropX: Double = 0, cropY: Double = 0, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double) {
+                    self.topAnalysis = topAnalysis
+                    self.leftAnalysis = leftAnalysis
+                    self.bottomAnalysis = bottomAnalysis
+                    self.rightAnalysis = rightAnalysis
+                    self.imageURL = imageURL
+                    self.irisDuration = irisDuration
+                    self.irisStillDisplayTime = irisStillDisplayTime
+                    self.irisVideoURL = irisVideoURL
+                    self.isIris = isIris
+                    self.localIdentifier = localIdentifier
+                    self.modificationDate = modificationDate
+                    self.cropH = cropH
+                    self.cropW = cropW
+                    self.cropX = cropX
+                    self.cropY = cropY
+                    self.originalCropH = originalCropH
+                    self.originalCropW = originalCropW
+                    self.originalCropX = originalCropX
+                    self.originalCropY = originalCropY
+                }
             }
         }
 
