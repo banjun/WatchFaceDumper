@@ -102,6 +102,11 @@ extension Watchface {
         public struct UltraCubeV2: Codable {
             public var imageList: [Item]
             public var version: Int = 2
+            
+            init(imageList: [Item] = [], version: Int) {
+                self.imageList = imageList
+                self.version = version
+            }
 
             public struct Item: Codable {
                 public var baseImageURL: String
@@ -136,6 +141,30 @@ extension Watchface {
                 public var parallaxScale: Double = 1.075
                 public var userAdjusted: Bool? = false
 
+                public init(baseImageURL: String, maskImageURL: String? = nil, backgroundImageURL: String? = nil, localIdentifier: String, modificationDate: Date? = nil, cropH: Double? = nil, cropW: Double? = nil, cropX: Double? = nil, cropY: Double? = nil, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double, baseImageZorder: Int, maskedImageZorder: Int, timeElementZorder: Int, timeElementUnitBaseline: Double, timeElementUnitHeight: Double, imageAOTBrightness: Double, parallaxFlat: Bool, parallaxScale: Double, userAdjusted: Bool? = nil) {
+                    self.baseImageURL = baseImageURL
+                    self.maskImageURL = maskImageURL
+                    self.backgroundImageURL = backgroundImageURL
+                    self.localIdentifier = localIdentifier
+                    self.modificationDate = modificationDate
+                    self.cropH = cropH
+                    self.cropW = cropW
+                    self.cropX = cropX
+                    self.cropY = cropY
+                    self.originalCropH = originalCropH
+                    self.originalCropW = originalCropW
+                    self.originalCropX = originalCropX
+                    self.originalCropY = originalCropY
+                    self.baseImageZorder = baseImageZorder
+                    self.maskedImageZorder = maskedImageZorder
+                    self.timeElementZorder = timeElementZorder
+                    self.timeElementUnitBaseline = timeElementUnitBaseline
+                    self.timeElementUnitHeight = timeElementUnitHeight
+                    self.imageAOTBrightness = imageAOTBrightness
+                    self.parallaxFlat = parallaxFlat
+                    self.parallaxScale = parallaxScale
+                    self.userAdjusted = userAdjusted
+                }
             }
         }
     }
