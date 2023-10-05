@@ -120,7 +120,7 @@
 		98E3C3BBEC3E4C76A7589A44F6F61F60 /* Pods-WatchFaceDumper */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-WatchFaceDumper"; path = Pods_WatchFaceDumper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A62FED458C5BFC31A08759927EA6870 /* Archive+MemoryFile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Archive+MemoryFile.swift"; path = "Sources/ZIPFoundation/Archive+MemoryFile.swift"; sourceTree = "<group>"; };
 		9AB74307BCB22DAAA8017B82D0E14CDF /* FootlessParser-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "FootlessParser-Info.plist"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		A034072E3579D6D2E9B4269E5C04D60F /* ※ikemen-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "※ikemen-umbrella.h"; sourceTree = "<group>"; };
 		A53C5F44FCBC3FDF6C22DB5A965AB41F /* FootlessParser.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FootlessParser.release.xcconfig; sourceTree = "<group>"; };
 		AB10776933EC92B3FE329B7B6A9979EE /* Data+Compression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Data+Compression.swift"; path = "Sources/ZIPFoundation/Data+Compression.swift"; sourceTree = "<group>"; };
@@ -241,7 +241,6 @@
 				7A14E980FC5AF9B48A58E565284F6F71 /* ※ikemen.swift */,
 				262C29339F8A3146EE1BE506690C98F4 /* Support Files */,
 			);
-			name = "※ikemen";
 			path = "※ikemen";
 			sourceTree = "<group>";
 		};
@@ -267,7 +266,6 @@
 				7F2464C89DD8167E5858DD1FEA0C7174 /* FileManager+ZIP.swift */,
 				74DFD026018EA08766F536B524A229A8 /* Support Files */,
 			);
-			name = ZIPFoundation;
 			path = ZIPFoundation;
 			sourceTree = "<group>";
 		};
@@ -312,7 +310,6 @@
 				3C388EAF2B8DDC72206DCB6D3ABB965F /* StringParser.swift */,
 				FE5AD1059B402A82CAE1DCF53E6BE478 /* Support Files */,
 			);
-			name = FootlessParser;
 			path = FootlessParser;
 			sourceTree = "<group>";
 		};
@@ -363,7 +360,6 @@
 				25F9722EBD5B0FE476E1E781AB649FDD /* VFLSyntax.swift */,
 				9B8FFE7D5D605FD55D974380A467EC16 /* Support Files */,
 			);
-			name = NorthLayout;
 			path = NorthLayout;
 			sourceTree = "<group>";
 		};
@@ -529,8 +525,8 @@
 		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1300;
-				LastUpgradeCheck = 1300;
+				LastSwiftUpdateCheck = 1240;
+				LastUpgradeCheck = 1240;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 12.0";
