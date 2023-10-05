@@ -9,6 +9,16 @@ public struct PortraitWatchface {
     public var bottomComplication: Complication?
     public var resources: Resources
 
+    public init(device_size: Int, style: Style, snapshot: Data, no_borders_snapshot: Data, dateComplication: Complication? = nil, bottomComplication: Complication? = nil, resources: Resources) {
+        self.device_size = device_size
+        self.style = style
+        self.snapshot = snapshot
+        self.no_borders_snapshot = no_borders_snapshot
+        self.dateComplication = dateComplication
+        self.bottomComplication = bottomComplication
+        self.resources = resources
+    }
+    
     public enum Style: String {
         /// Classic
         case style1 = "style 1"
