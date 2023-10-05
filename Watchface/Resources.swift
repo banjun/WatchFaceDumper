@@ -10,20 +10,20 @@ extension Watchface {
             self.images = images
             self.files = files
         }
-
+        
         public enum Metadata: Codable {
             /// photos or kaleidoscope (can be separated into cases...)
             case photos(PhotosV1)
             /// UltraCube aka Portrait
             case ultraCube(UltraCubeV2)
-
+            
             public init(from decoder: Decoder) throws {
                 self = try (try? PhotosV1(from: decoder)).map(Self.photos)
                 ?? (try? UltraCubeV2(from: decoder)).map(Self.ultraCube)
                 // generate an exception as photos
                 ?? Self.photos(PhotosV1(from: decoder))
             }
-
+            
             public func encode(to encoder: Encoder) throws {
                 switch self {
                 case .photos(let v): try v.encode(to: encoder)
@@ -31,11 +31,11 @@ extension Watchface {
                 }
             }
         }
-
+        
         public struct PhotosV1: Codable {
             public var imageList: [Item]
             public var version: Int = 1
-
+            
             public init(imageList: [Item] = [], version: Int = 1) {
                 self.imageList = imageList
                 self.version = version
@@ -55,7 +55,7 @@ extension Watchface {
                     public var textHue: Double
                     public var textSaturation: Double
                     public var version: Int = 1
-
+                    
                     public init(bgBrightness: Double, bgHue: Double, bgSaturation: Double, coloredText: Bool, complexBackground: Bool, shadowBrightness: Double, shadowHue: Double, shadowSaturation: Double, textBrightness: Double, textHue: Double, textSaturation: Double, version: Int = 1) {
                         self.bgBrightness = bgBrightness
                         self.bgHue = bgHue
@@ -71,7 +71,7 @@ extension Watchface {
                         self.version = version
                     }
                 }
-
+                
                 /// photos has some, kaleidoscope has none
                 public var topAnalysis: Analysis?
                 /// photos has some, kaleidoscope has none
@@ -80,18 +80,18 @@ extension Watchface {
                 public var bottomAnalysis: Analysis?
                 /// photos has some, kaleidoscope has none
                 public var rightAnalysis: Analysis?
-
+                
                 public var imageURL: String
-
+                
                 public var irisDuration: Double = 3
                 public var irisStillDisplayTime: Double = 0
                 public var irisVideoURL: String
                 public var isIris: Bool = true
-
+                
                 /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
                 public var localIdentifier: String
                 public var modificationDate: Date? = Date()
-
+                
                 public var cropH: Double = 480
                 public var cropW: Double = 384
                 public var cropX: Double = 0
@@ -100,7 +100,7 @@ extension Watchface {
                 public var originalCropW: Double
                 public var originalCropX: Double
                 public var originalCropY: Double
-
+                
                 
                 public init(topAnalysis: Analysis? = nil, leftAnalysis: Analysis? = nil, bottomAnalysis: Analysis? = nil, rightAnalysis: Analysis? = nil, imageURL: String, irisDuration: Double, irisStillDisplayTime: Double, irisVideoURL: String, isIris: Bool, localIdentifier: String, modificationDate: Date? = Date(), cropH: Double = 480, cropW: Double = 384, cropX: Double = 0, cropY: Double = 0, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double) {
                     self.topAnalysis = topAnalysis
@@ -125,27 +125,27 @@ extension Watchface {
                 }
             }
         }
-
+        
         public struct UltraCubeV2: Codable {
             public var imageList: [Item]
             public var version: Int = 2
             
-            init(imageList: [Item] = [], version: Int) {
+            public init(imageList: [Item] = [], version: Int = 2) {
                 self.imageList = imageList
                 self.version = version
             }
-
+            
             public struct Item: Codable {
                 public var baseImageURL: String
                 /// paired with backgroundImageURL. nil for some photos
                 public var maskImageURL: String?
                 /// paired with maskImageURL. nil for some photos
                 public var backgroundImageURL: String?
-
+                
                 /// required for watchface sharing... it seems like PHAsset local identifier "UUID/L0/001". an empty string should work anyway.
                 public var localIdentifier: String
                 public var modificationDate: Date? = Date()
-
+                
                 public var cropH: Double? = 480
                 public var cropW: Double? = 384
                 public var cropX: Double? = 0
@@ -154,7 +154,7 @@ extension Watchface {
                 public var originalCropW: Double
                 public var originalCropX: Double
                 public var originalCropY: Double
-
+                
                 public var baseImageZorder: Int = 0
                 public var maskedImageZorder: Int = 1
                 public var timeElementZorder: Int = 2
@@ -167,8 +167,31 @@ extension Watchface {
                 /// constant 1.075?
                 public var parallaxScale: Double = 1.075
                 public var userAdjusted: Bool? = false
-
-                public init(baseImageURL: String, maskImageURL: String? = nil, backgroundImageURL: String? = nil, localIdentifier: String, modificationDate: Date? = nil, cropH: Double? = nil, cropW: Double? = nil, cropX: Double? = nil, cropY: Double? = nil, originalCropH: Double, originalCropW: Double, originalCropX: Double, originalCropY: Double, baseImageZorder: Int, maskedImageZorder: Int, timeElementZorder: Int, timeElementUnitBaseline: Double = 0.8035714285714286, timeElementUnitHeight: Double = 0.2411167512690355, imageAOTBrightness: Double, parallaxFlat: Bool, parallaxScale: Double, userAdjusted: Bool? = nil) {
+                
+                public init(
+                    baseImageURL: String,
+                    maskImageURL: String? = nil,
+                    backgroundImageURL: String? = nil,
+                    localIdentifier: String,
+                    modificationDate: Date? = nil,
+                    cropH: Double? = 480,
+                    cropW: Double? = 384,
+                    cropX: Double? = nil,
+                    cropY: Double? = nil,
+                    originalCropH: Double,
+                    originalCropW: Double,
+                    originalCropX: Double,
+                    originalCropY: Double,
+                    baseImageZorder: Int,
+                    maskedImageZorder: Int,
+                    timeElementZorder: Int,
+                    timeElementUnitBaseline: Double = 0.8035714285714286,
+                    timeElementUnitHeight: Double = 0.2411167512690355,
+                    imageAOTBrightness: Double = 0.5,
+                    parallaxFlat: Bool = false,
+                    parallaxScale: Double = 1.075,
+                    userAdjusted: Bool? = nil
+                ) {
                     self.baseImageURL = baseImageURL
                     self.maskImageURL = maskImageURL
                     self.backgroundImageURL = backgroundImageURL
