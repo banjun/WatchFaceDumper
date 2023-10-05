@@ -5,6 +5,11 @@ extension Watchface {
         public var images: Metadata
         /// filename -> content
         public var files: [String: Data]
+        
+        public init(images: Metadata, files: [String : Data]) {
+            self.images = images
+            self.files = files
+        }
 
         public enum Metadata: Codable {
             /// photos or kaleidoscope (can be separated into cases...)
